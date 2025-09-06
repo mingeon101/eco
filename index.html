@@ -390,30 +390,32 @@
             text-align: left;
         }
         
-        .mission-item.gemini-generated-item {
+        .mission-item.completed {
             background-color: #dcfce7; /* 더 밝은 초록색 배경 */
             border-left: 5px solid #10b981; /* 강조 표시 */
             animation: fadeIn 0.5s ease-in-out;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        
         .mission-item {
+            display: flex;
+            align-items: center;
             background-color: white;
             padding: 1rem;
             border-radius: 1rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             border: 1px solid #d1fae5;
             transition: transform 0.2s ease-in-out;
+            cursor: pointer; /* 클릭 가능하도록 커서 변경 */
         }
-
+        
         .mission-item:hover {
             transform: translateY(-5px);
         }
-
+        
+        .mission-text-container {
+            flex-grow: 1;
+        }
+        
         .mission-item h3 {
             font-weight: bold;
             color: #047857;
@@ -424,6 +426,25 @@
         .mission-item p {
             color: #4b5563;
             font-size: 0.9rem;
+        }
+
+        .mission-icon-container {
+            width: 30px;
+            height: 30px;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+            flex-shrink: 0; /* 아이콘이 줄어들지 않도록 */
+            margin-right: 1rem;
+        }
+        
+        .mission-item.completed .mission-icon-container {
+            background-color: #a7f3d0; /* 연두색 배경 */
+            color: #047857;
         }
         
         .mission-close-btn, .rewards-close-btn {
@@ -706,29 +727,8 @@
             <h2>오늘의 미션</h2>
             <p class="text-gray-600">친환경 활동으로 생명력을 얻고 오름을 키워보세요!</p>
             <ul id="mission-list" class="mission-list">
-                <li class="mission-item">
-                    <h3>🌳 나무 심기</h3>
-                    <p>산이나 공원에 방문하여 나무 한 그루를 심어보세요.</p>
-                </li>
-                <li class="mission-item">
-                    <h3>💡 전등 끄기</h3>
-                    <p>불필요한 조명은 끄고 에너지를 절약하세요.</p>
-                </li>
-                <li class="mission-item">
-                    <h3>🚰 물 절약</h3>
-                    <p>양치할 때 컵 사용하기, 샤워 시간 줄이기 등 물을 아껴 쓰세요.</p>
-                </li>
-                <li class="mission-item">
-                    <h3>🛍️ 다회용품 사용</h3>
-                    <p>일회용 컵 대신 텀블러, 비닐봉투 대신 장바구니를 사용하세요.</p>
-                </li>
+                <!-- 미션이 여기에 동적으로 추가됩니다. -->
             </ul>
-            <!-- Gemini API 호출 버튼 -->
-            <button id="generate-mission-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-full mt-4 transition-colors duration-300">
-                ✨ 새로운 미션 생성하기
-            </button>
-            <!-- 로딩 메시지 -->
-            <p id="gemini-loading" class="text-xs text-gray-500 mt-2 hidden">미션 생성 중...</p>
             <button id="mission-close-btn" class="mission-close-btn">닫기</button>
         </div>
     </div>
@@ -759,11 +759,6 @@
             <button id="rewards-close-btn" class="rewards-close-btn">닫기</button>
         </div>
     </div>
-
-    <!-- Chatbase 채팅 풍선 스크립트 -->
-    <script>
-      (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="KwLJdboX39BEnTOig8OKU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-    </script>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -820,6 +815,124 @@
             23: 419430300, 24: 838860700, 25: 1677721500, 26: 3355443100,
             27: 6710886300, 28: 13421772700, 29: 26843545500, 30: 53687091100,
         };
+        
+        // 사용자가 제공한 전체 미션 목록
+        const allMissions = [
+            { id: 'm1', title: '가전제품 플러그 뽑기', description: '사용하지 않는 가전제품의 플러그를 뽑아 대기전력을 차단하세요.', category: '에너지 절약' },
+            { id: 'm2', title: 'LED 전구 사용', description: '에너지 효율이 높은 LED 전구로 교체하세요.', category: '에너지 절약' },
+            { id: 'm3', title: '냉난방 온도 조절', description: '겨울철 실내 온도는 20°C, 여름철 실내 온도는 26°C를 유지하세요.', category: '에너지 절약' },
+            { id: 'm4', title: '에너지 효율 등급 확인', description: '가전제품 구매 시 에너지 소비 효율 1등급 제품을 선택하세요.', category: '에너지 절약' },
+            { id: 'm5', title: '보일러 외출 모드 사용', description: '외출 시 보일러 외출 모드를 사용해 난방비를 절약하세요.', category: '에너지 절약' },
+            { id: 'm6', title: '에어컨 필터 청소', description: '2주에 한 번씩 에어컨 필터를 청소하면 냉방 효율이 높아집니다.', category: '에너지 절약' },
+            { id: 'm7', title: '노트북/컴퓨터 절전모드 사용', description: '사용하지 않을 때는 절전모드로 전환하세요.', category: '에너지 절약' },
+            { id: 'm8', title: '냉장고 문 자주 열지 않기', description: '냉장고 문을 여는 횟수를 줄여 냉기 손실을 막으세요.', category: '에너지 절약' },
+            { id: 'm9', title: '세탁물 모아서 세탁하기', description: '세탁기를 한 번에 많이 돌려 물과 전기 사용량을 줄이세요.', category: '에너지 절약' },
+            { id: 'm10', title: '자연광 활용', description: '낮에는 커튼을 열어 자연광을 최대한 활용하세요.', category: '에너지 절약' },
+            { id: 'm11', title: '절수형 샤워기 설치', description: '물 사용량을 줄여주는 절수형 샤워기로 교체하세요.', category: '에너지 절약' },
+            { id: 'm12', title: '샤워 시간 줄이기', description: '샤워 시간을 5분 이내로 줄이세요.', category: '에너지 절약' },
+            { id: 'm13', title: '대기 전력 측정기 사용', description: '각 가전제품의 대기 전력을 측정해 보세요.', category: '에너지 절약' },
+            { id: 'm14', title: '스마트 플러그 사용', description: '앱으로 가전제품 전원을 제어하는 스마트 플러그를 활용하세요.', category: '에너지 절약' },
+            { id: 'm15', title: '전기밥솥 보온 기능 자제', description: '밥을 먹을 만큼만 하고, 보온 기능은 최소한으로 사용하세요.', category: '에너지 절약' },
+            { id: 'm16', title: '인덕션 대신 가스레인지', description: '인덕션보다 전기를 덜 소비하는 가스레인지를 사용하세요.', category: '에너지 절약' },
+            { id: 'm17', title: '빨래 건조대 활용', description: '건조기 대신 햇빛과 바람으로 빨래를 말리세요.', category: '에너지 절약' },
+            { id: 'm18', title: '친환경 보일러 설치', description: '에너지 효율이 높은 친환경 콘덴싱 보일러로 교체하세요.', category: '에너지 절약' },
+            { id: 'm19', title: '겨울철 내복 입기', description: '내복을 입어 체감 온도를 높이고 난방 온도를 낮추세요.', category: '에너지 절약' },
+            { id: 'm20', title: '전기장판 대신 온수매트 사용', description: '전기 소모가 더 적은 온수매트를 사용하세요.', category: '에너지 절약' },
+            { id: 'm21', title: '대중교통 이용', description: '가까운 거리는 대중교통을 이용하세요.', category: '교통' },
+            { id: 'm22', title: '자전거 타기', description: '자전거를 이용해 이동 거리를 줄이고 운동 효과도 얻으세요.', category: '교통' },
+            { id: 'm23', title: '걷기', description: '30분 이내 거리는 걸어서 이동하세요.', category: '교통' },
+            { id: 'm24', title: '카풀 이용', description: '직장 동료나 친구와 카풀을 해 탄소 배출량을 줄이세요.', category: '교통' },
+            { id: 'm25', title: '친환경 자동차 이용', description: '전기차나 수소차 등 친환경 자동차를 구매하세요.', category: '교통' },
+            { id: 'm26', title: '승용차 요일제 참여', description: '승용차 요일제에 참여해 차량 운행을 줄이세요.', category: '교통' },
+            { id: 'm27', title: '타이어 공기압 체크', description: '적정 타이어 공기압을 유지하면 연비가 좋아집니다.', category: '교통' },
+            { id: 'm28', title: '급제동, 급가속하지 않기', description: '부드럽게 운전하면 연료 소비를 줄일 수 있습니다.', category: '교통' },
+            { id: 'm29', title: '불필요한 짐 제거', description: '트렁크에 불필요한 짐을 싣고 다니지 마세요.', category: '교통' },
+            { id: 'm30', title: '공회전 줄이기', description: '10초 이상 정차 시 시동을 끄세요.', category: '교통' },
+            { id: 'm31', title: '개인 컵 사용', description: '일회용 컵 대신 개인 컵을 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm32', title: '텀블러 휴대', description: '외출 시 텀블러를 가지고 다니세요.', category: '소비 및 재활용' },
+            { id: 'm33', title: '장바구니 사용', description: '비닐봉투 대신 장바구니를 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm34', title: '포장재 없는 제품 구매', description: '과대 포장된 제품보다 포장재가 적은 제품을 선택하세요.', category: '소비 및 재활용' },
+            { id: 'm35', title: '종이컵 사용 줄이기', description: '종이컵 대신 머그잔을 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm36', title: '개인 수저 사용', description: '일회용 수저 대신 개인 수저를 휴대하세요.', category: '소비 및 재활용' },
+            { id: 'm37', title: '일회용품 거절', description: '식당이나 카페에서 일회용품을 받지 마세요.', category: '소비 및 재활용' },
+            { id: 'm38', title: '리필 제품 사용', description: '샴푸, 세제 등 리필이 가능한 제품을 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm39', title: '중고 물품 거래', description: '필요한 물건은 중고로 구매하고, 안 쓰는 물건은 판매하거나 기부하세요.', category: '소비 및 재활용' },
+            { id: 'm40', title: '재활용 철저히', description: '플라스틱, 종이, 유리병 등 재활용품을 올바르게 분리배출하세요.', category: '소비 및 재활용' },
+            { id: 'm41', title: '비닐 랩 사용 줄이기', description: '비닐 랩 대신 재사용 가능한 밀폐 용기를 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm42', title: '물티슈 사용 줄이기', description: '물티슈는 대부분 플라스틱이 포함되어 있으니 사용을 자제하세요.', category: '소비 및 재활용' },
+            { id: 'm43', title: '쓰레기 분리배출 기준 지키기', description: '종이팩, 페트병 등 재활용 기준에 맞게 배출하세요.', category: '소비 및 재활용' },
+            { id: 'm44', title: '헌 옷 기부', description: '안 입는 옷은 버리지 않고 기부하거나 재활용하세요.', category: '소비 및 재활용' },
+            { id: 'm45', title: '다회용 용기 사용', description: '배달 음식 주문 시 다회용기 사용 가능 여부를 확인하세요.', category: '소비 및 재활용' },
+            { id: 'm46', title: '친환경 인증 제품 구매', description: '탄소 발자국이 적은 친환경 인증 제품을 구매하세요.', category: '소비 및 재활용' },
+            { id: 'm47', title: '물건 아껴쓰기', description: '물건을 오래 쓰고 수선해서 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm48', title: '전자 영수증 받기', description: '종이 영수증 대신 전자 영수증을 받으세요.', category: '소비 및 재활용' },
+            { id: 'm49', title: '택배 박스 재활용', description: '택배 박스는 필요한 곳에 재사용하세요.', category: '소비 및 재활용' },
+            { id: 'm50', title: '선물 포장 간소화', description: '선물 포장을 간소하게 하거나 재활용 가능한 재료를 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm51', title: '친환경 세제 사용', description: '미세 플라스틱이 없는 친환경 세제를 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm52', title: '개인 손수건 사용', description: '종이타월 대신 개인 손수건을 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm53', title: '빨대 사용 거절', description: '플라스틱 빨대 사용을 거절하세요.', category: '소비 및 재활용' },
+            { id: 'm54', title: '면도기 재활용', description: '일회용 면도기 대신 칼날만 교체하는 면도기를 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm55', title: '가방 속 물건 정리', description: '불필요한 물건을 빼서 가방 무게를 줄이세요.', category: '소비 및 재활용' },
+            { id: 'm56', title: '핸드 드라이어 사용 자제', description: '화장실 핸드 드라이어 대신 손수건을 사용하세요.', category: '소비 및 재활용' },
+            { id: 'm57', title: '대용량 제품 구매', description: '소용량 제품보다 포장재가 적은 대용량 제품을 구매하세요.', category: '소비 및 재활용' },
+            { id: 'm58', title: '지속 가능한 브랜드 소비', description: '친환경 경영을 실천하는 기업의 제품을 구매하세요.', category: '소비 및 재활용' },
+            { id: 'm59', title: '재활용 가능한 포장재 선택', description: '구매 시 재활용이 쉬운 포장재인지 확인하세요.', category: '소비 및 재활용' },
+            { id: 'm60', title: '폐건전지 올바른 분리배출', description: '폐건전지를 전용 수거함에 분리배출하세요.', category: '소비 및 재활용' },
+            { id: 'm61', title: '잔반 남기지 않기', description: '먹을 만큼만 조리하고, 식사 시 잔반을 남기지 마세요.', category: '식습관' },
+            { id: 'm62', title: '육류 소비 줄이기', description: '소고기 등 육류 생산 과정에서 많은 온실가스가 발생하므로 채식을 늘리세요.', category: '식습관' },
+            { id: 'm63', title: '가까운 곳에서 생산된 식재료 구매', description: '푸드 마일리지를 줄이기 위해 지역 농산물을 구매하세요.', category: '식습관' },
+            { id: 'm64', title: '제철 음식 먹기', description: '제철 음식은 비닐하우스 난방 등 불필요한 에너지를 사용하지 않습니다.', category: '식습관' },
+            { id: 'm65', title: '유통기한 확인하고 구매', description: '불필요한 음식물 쓰레기를 만들지 않도록 필요한 만큼만 구매하세요.', category: '식습관' },
+            { id: 'm66', title: '음식물 쓰레기 줄이기', description: '음식물 쓰레기를 줄이는 것은 탄소 감축에 큰 도움이 됩니다.', category: '식습관' },
+            { id: 'm67', title: '음식 재료 껍질 활용', description: '채소 껍질 등으로 육수를 만들거나 요리에 활용하세요.', category: '식습관' },
+            { id: 'm68', title: '채소, 과일 섭취 늘리기', description: '육류 소비를 줄이고 채소와 과일 섭취를 늘리세요.', category: '식습관' },
+            { id: 'm69', title: '음료수 대신 물 마시기', description: '제조 및 운송 과정에서 탄소를 배출하는 음료수 대신 물을 마시세요.', category: '식습관' },
+            { id: 'm70', title: '커피 찌꺼기 재활용', description: '커피 찌꺼기는 탈취제나 비료로 활용 가능합니다.', category: '식습관' },
+            { id: 'm71', title: '직접 도시락 싸기', description: '일회용 포장재를 사용하지 않는 직접 싼 도시락을 이용하세요.', category: '식습관' },
+            { id: 'm72', title: '푸드뱅크 기부', description: '유통기한이 임박한 식료품을 푸드뱅크에 기부하세요.', category: '식습관' },
+            { id: 'm73', title: '탄소 저감 식단 도전', description: '일주일에 하루는 채식하는 \'채식데이\'를 실천해 보세요.', category: '식습관' },
+            { id: 'm74', title: '생수병 재활용', description: '다 쓴 생수병은 깨끗이 씻어 분리배출하세요.', category: '식습관' },
+            { id: 'm75', title: '직접 채소 키우기', description: '베란다 텃밭을 만들어 직접 채소를 길러 보세요.', category: '식습관' },
+            { id: 'm76', title: '농수산물 직거래 이용', description: '생산자와 소비자 간의 직거래를 통해 유통 과정의 탄소 배출을 줄이세요.', category: '식습관' },
+            { id: 'm77', title: '외식 대신 집에서 요리', description: '외식 시 발생하는 포장재 및 운송 과정을 줄이세요.', category: '식습관' },
+            { id: 'm78', title: '냉동식품보다 신선식품', description: '냉동식품은 제조 및 보관 과정에서 많은 에너지를 사용합니다.', category: '식습관' },
+            { id: 'm79', title: '과도한 포장재 제거', description: '구매한 식품의 불필요한 포장재는 매장에서 벗겨내고 오세요.', category: '식습관' },
+            { id: 'm80', title: '음식 남김 없이 먹기', description: '뷔페 등에서 음식을 남기지 않도록 주의하세요.', category: '식습관' },
+            { id: 'm81', title: '친환경 제품 사용', description: '샴푸바, 고체 비누 등 친환경 제품을 사용하세요.', category: '생활 습관 및 기타' },
+            { id: 'm82', title: '나무 심기', description: '식목일에 나무를 심거나 나무 심기 캠페인에 참여하세요.', category: '생활 습관 및 기타' },
+            { id: 'm83', title: '온실가스 감축 서명 참여', description: '온실가스 감축을 위한 사회적 캠페인에 참여하세요.', category: '생활 습관 및 기타' },
+            { id: 'm84', title: '에코백 활용', description: '비닐봉투 대신 에코백을 사용하세요.', category: '생활 습관 및 기타' },
+            { id: 'm85', title: '물 아껴쓰기', description: '양치 시 컵 사용, 설거지 시 물 받아서 하기 등 물을 아껴쓰세요.', category: '생활 습관 및 기타' },
+            { id: 'm86', title: '플라스틱 칫솔 대신 대나무 칫솔 사용', description: '플라스틱 칫솔 대신 대나무 칫솔을 사용하세요.', category: '생활 습관 및 기타' },
+            { id: 'm87', title: '탄소 포인트 제도 참여', description: '전기, 수도, 도시가스 사용량을 절감해 탄소 포인트를 적립하세요.', category: '생활 습관 및 기타' },
+            { id: 'm88', title: '가정 내 폐기물 줄이기', description: '불필요한 물건 구매를 줄여 쓰레기를 최소화하세요.', category: '생활 습관 및 기타' },
+            { id: 'm89', title: '종이 사용 줄이기', description: '이면지 사용, 불필요한 인쇄 자제 등 종이 사용을 줄이세요.', category: '생활 습관 및 기타' },
+            { id: 'm90', title: '물건 수리해서 사용', description: '고장난 물건은 쉽게 버리지 말고 수리해서 사용하세요.', category: '생활 습관 및 기타' },
+            { id: 'm91', title: '미니멀 라이프 실천', description: '필요한 물건만 소유하는 미니멀 라이프를 실천하세요.', category: '생활 습관 및 기타' },
+            { id: 'm92', title: '지역 사회 활동 참여', description: '지역의 환경 보호 활동에 적극적으로 참여하세요.', category: '생활 습관 및 기타' },
+            { id: 'm93', title: '가정 내 공기정화 식물 키우기', description: '공기정화 식물을 키워 실내 공기를 정화하세요.', category: '생활 습관 및 기타' },
+            { id: 'm94', title: '에너지 절약 습관 가족과 공유', description: '가족 모두가 함께 온실가스 감축을 위해 노력하세요.', category: '생활 습관 및 기타' },
+            { id: 'm95', title: '지구를 위한 한 시간', description: '매년 \'지구촌 전등 끄기\' 캠페인에 참여하세요.', category: '생활 습관 및 기타' },
+            { id: 'm96', title: '지속 가능한 패션 소비', description: '옷을 오래 입고, 중고 의류를 구매하거나 교환하세요.', category: '생활 습관 및 기타' },
+            { id: 'm97', title: '개인위생용품 재사용', description: '면 패드, 생리컵 등 재사용 가능한 제품을 사용하세요.', category: '생활 습관 및 기타' },
+            { id: 'm98', title: '전자책 읽기', description: '종이책 대신 전자책을 읽으세요.', category: '생활 습관 및 기타' },
+            { id: 'm99', title: '업사이클링 실천', description: '버려지는 물건에 디자인을 더해 새로운 제품으로 탄생시키는 업사이클링에 도전하세요.', category: '생활 습관 및 기타' },
+            { id: 'm100', title: '폐건전지 올바른 분리배출', description: '폐건전지를 전용 수거함에 분리배출하세요.', category: '생활 습관 및 기타' }
+        ];
+
+        // 매번 미션 모달을 열 때마다 무작위로 10개의 미션을 선택
+        let dailyMissions = [];
+        
+        // 레벨업에 필요한 생명력 정의 (최대 30레벨까지 확장)
+        // 기존 패턴 (차이가 2배씩 증가)을 유지하여 계산
+        const levelThresholds = {
+            2: 100, 3: 300, 4: 700, 5: 1500, 6: 3100, 7: 6300, 8: 12700,
+            9: 25500, 10: 51100, 11: 102300, 12: 204700, 13: 409500,
+            14: 819100, 15: 1638300, 16: 3276700, 17: 6553500, 18: 13107100,
+            19: 26214300, 20: 52428700, 21: 104857500, 22: 209715100,
+            23: 419430300, 24: 838860700, 25: 1677721500, 26: 3355443100,
+            27: 6710886300, 28: 13421772700, 29: 26843545500, 30: 53687091100,
+        };
 
         // UI 요소 가져오기
         const profileIconWrapper = document.getElementById('profile-icon-wrapper');
@@ -854,8 +967,6 @@
         const missionIconWrapper = document.getElementById("mission-icon-wrapper");
         const missionModalOverlay = document.getElementById("mission-modal-overlay");
         const missionCloseBtn = document.getElementById("mission-close-btn");
-        const generateMissionBtn = document.getElementById("generate-mission-btn");
-        const geminiLoadingEl = document.getElementById("gemini-loading");
         const missionListEl = document.getElementById("mission-list");
         
         // 보상 모달 관련 요소 추가
@@ -1028,7 +1139,7 @@
                     logMessage = `🚶‍♂️ 걸어서 탄소 감축! (+${lifeForceChange} 생명력)`;
                     break;
                 case "자전거":
-                    lifeForceChange = 7; // 요청에 따라 7로 변경
+                    lifeForceChange = 7; // 요청에 따라 7으로 변경
                     ghgChange = 30;
                     logMessage = `🚲 자전거로 환경 보호! (+${lifeForceChange} 생명력)`;
                     break;
@@ -1218,75 +1329,70 @@
             // 보상 탭이 열릴 때마다 최신 상태로 다시 렌더링
             renderRewards();
         }
-
+        
         /**
-         * ✨ Gemini API를 사용하여 새로운 친환경 미션을 생성합니다.
+         * 매일 새로운 미션을 생성하거나, 기존 미션을 불러오는 함수입니다.
+         * 미션은 하루 동안만 유효합니다.
          */
-        async function generateNewMission() {
-            const userPrompt = "Create a single, creative, and unique eco-friendly mission. The mission must be a single sentence in Korean and related to daily life. Do not include titles or headings. Only provide the mission text.";
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        function getDailyMissions() {
+            const today = new Date().toDateString();
+            const lastMissionDate = localStorage.getItem('dailyMissionsDate');
+            let savedMissions = localStorage.getItem('dailyMissionsList');
 
-            // 로딩 상태 시작
-            generateMissionBtn.disabled = true;
-            geminiLoadingEl.classList.remove('hidden');
-
-            const payload = {
-                contents: [{ parts: [{ text: userPrompt }] }],
-                systemInstruction: {
-                    parts: [{ text: "당신은 사람들의 환경 보호를 돕는 친절한 안내자입니다." }]
-                },
-            };
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const candidate = result.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const missionText = candidate.content.parts[0].text.trim();
-                    addNewMissionToUI(missionText);
-                    logAction("✨ 새로운 미션이 생성되었습니다!");
-                } else {
-                    throw new Error("API 응답에 내용이 없습니다.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API 호출 오류:", error);
-                showModal("미션 생성 오류", `새로운 미션을 만들지 못했습니다: ${error.message}`);
-            } finally {
-                // 로딩 상태 종료
-                generateMissionBtn.disabled = false;
-                geminiLoadingEl.classList.add('hidden');
+            if (lastMissionDate === today && savedMissions) {
+                // 오늘 날짜의 미션이 이미 있다면 불러오기
+                console.log("오늘의 미션을 로컬 저장소에서 불러옵니다.");
+                return JSON.parse(savedMissions);
+            } else {
+                // 새로운 미션 생성 및 저장
+                console.log("새로운 오늘의 미션을 생성합니다.");
+                const shuffledMissions = [...allMissions].sort(() => 0.5 - Math.random());
+                const newDailyMissions = shuffledMissions.slice(0, 10).map(mission => ({ ...mission, completed: false }));
+                localStorage.setItem('dailyMissionsDate', today);
+                localStorage.setItem('dailyMissionsList', JSON.stringify(newDailyMissions));
+                return newDailyMissions;
             }
         }
         
         /**
-         * 생성된 미션을 UI에 추가합니다.
+         * 선택된 10개의 미션을 화면에 렌더링하는 함수입니다.
+         * 각 미션에는 완료/미완료 상태를 토글하는 이벤트 리스너가 추가됩니다.
          */
-        function addNewMissionToUI(missionText) {
-            const newMissionItem = document.createElement('li');
-            newMissionItem.className = 'mission-item gemini-generated-item';
-            newMissionItem.innerHTML = `<h3>✨ 오늘의 미션 (Gemini)</h3><p>${missionText}</p>`;
+        function renderMissions() {
+            // getDailyMissions 함수를 호출하여 현재 미션 목록을 가져옴
+            dailyMissions = getDailyMissions();
             
-            // 기존 미션 목록 맨 위에 추가
-            missionListEl.prepend(newMissionItem);
-
-            // 미션이 너무 많아지면 오래된 미션 제거
-            if (missionListEl.children.length > 6) {
-                missionListEl.removeChild(missionListEl.lastElementChild);
-            }
+            missionListEl.innerHTML = ''; // 기존 목록 초기화
+            dailyMissions.forEach(mission => {
+                const missionItem = document.createElement('li');
+                const completedClass = mission.completed ? 'completed' : '';
+                
+                missionItem.className = `mission-item ${completedClass}`;
+                missionItem.innerHTML = `
+                    <div class="mission-icon-container">
+                        ${mission.completed ?
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' :
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+                        }
+                    </div>
+                    <div class="mission-text-container">
+                        <h3>${mission.title}</h3>
+                        <p>${mission.description}</p>
+                    </div>
+                `;
+                
+                // 미션 클릭 시 완료 상태 토글
+                missionItem.addEventListener('click', () => {
+                    mission.completed = !mission.completed;
+                    // 변경된 상태를 로컬 저장소에 다시 저장
+                    localStorage.setItem('dailyMissionsList', JSON.stringify(dailyMissions));
+                    renderMissions(); // 변경된 상태로 다시 렌더링
+                });
+                
+                missionListEl.appendChild(missionItem);
+            });
         }
-
+        
         // Google 로그인 함수
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
@@ -1313,6 +1419,7 @@
         
         // 미션 모달 열기
         function openMissionModal() {
+            renderMissions();
             missionModalOverlay.style.display = 'flex';
         }
 
@@ -1357,8 +1464,6 @@
                 closeRewardsModal();
             }
         });
-
-        generateMissionBtn.addEventListener('click', generateNewMission);
 
         googleSignInBtn.addEventListener('click', signInWithGoogle);
         signOutBtn.addEventListener('click', () => {
