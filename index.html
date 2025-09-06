@@ -11,6 +11,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 기본 폰트 및 레이아웃 설정 */
+        html {
+            box-sizing: border-box;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #f0f8ff; /* 하늘색 배경 */
@@ -20,19 +28,19 @@
             min-height: 100vh;
             margin: 0;
             color: #333;
-            padding: 20px;
+            /* 모바일에서는 패딩 없이 전체 화면을 사용 */
+            padding: 0; 
         }
 
         .simulation-container {
             background-color: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
+            /* 모바일에서는 테두리 및 그림자 없이 전체 폭을 사용 */
+            width: 100%;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
             text-align: center;
             position: relative;
-            min-height: 600px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -47,7 +55,7 @@
         .oreum-background {
             background: linear-gradient(to top, #abddaa, #d9ead3);
             width: 100%;
-            height: 250px;
+            height: 200px; /* 모바일에서 더 작게 */
             margin: 20px 0;
             border-radius: 15px;
             display: flex;
@@ -200,7 +208,7 @@
             max-width: 300px;
             text-align: center;
         }
-
+        
         /* 사이드 패널 관련 스타일 */
         .side-panel-overlay {
             position: fixed;
@@ -267,9 +275,48 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
-
         .side-panel-content {
             flex-grow: 1;
+        }
+        .side-panel-content .stat {
+            background-color: #4a5568;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .side-panel-content .stat p {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        .side-panel-content .stat span {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #90f58d;
+        }
+
+        /* 미디어 쿼리를 사용해 반응형 디자인 적용 */
+        @media (min-width: 640px) {
+            body {
+                padding: 20px;
+            }
+            .simulation-container {
+                padding: 20px;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                width: 90%;
+                max-width: 500px;
+            }
+            .oreum-background {
+                height: 250px;
+            }
+            .oreum {
+                width: 200px;
+                height: 100px;
+            }
+            .stat span {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -278,10 +325,9 @@
     <div class="simulation-container">
         
         <!-- 게임 컨텐츠가 표시될 메인 섹션 -->
-        <!-- 'hidden' 클래스를 제거하여 로그인 없이도 오름이 보이게 수정 -->
         <div id="game-display-area" class="h-full flex flex-col justify-between">
             <header>
-                <h1>나의 탄소 오름</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold">나의 탄소 오름</h1>
             </header>
             
             <main class="flex-grow flex flex-col items-center justify-center">
@@ -303,9 +349,9 @@
             
             <!-- 정보 대시보드 -->
             <div class="dashboard">
-                <div class="stat">레벨 <span id="level-value">1</span></div>
-                <div class="stat">생명력 <span id="life-force-value">0</span></div>
-                <div class="stat">감축량 <span id="ghg-reduced-value">0g</span></div>
+                <div class="stat">레벨 <span id="level-value" class="text-2xl sm:text-3xl">1</span></div>
+                <div class="stat">생명력 <span id="life-force-value" class="text-2xl sm:text-3xl">0</span></div>
+                <div class="stat">감축량 <span id="ghg-reduced-value" class="text-2xl sm:text-3xl">0g</span></div>
             </div>
             
             <!-- 센서 대시보드 -->
@@ -322,11 +368,6 @@
             <div class="log-container" id="log-container">
                 <p>오름을 키워주세요!</p>
             </div>
-
-            <!-- 로그아웃 버튼 -->
-            <button id="sign-out-btn" class="hidden bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
-                로그아웃
-            </button>
         </div>
 
         <!-- 로그인 섹션 (항상 숨김) -->
@@ -336,44 +377,30 @@
         
         <!-- 하단 내비게이션 바 -->
         <footer class="w-full border-t border-gray-300 bg-white absolute bottom-0">
-            <nav class="flex justify-around items-center h-20 text-gray-500">
-                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <!-- divide-x 클래스로 아이콘 사이의 세로선 자동 생성 -->
+            <nav class="flex justify-around items-center h-14 sm:h-16 text-gray-500 divide-x divide-gray-300">
+                <!-- flex-1 flex justify-center items-center 클래스를 사용하여 아이콘을 중앙에 배치 -->
+                <a href="#" class="flex-1 flex justify-center items-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </a>
-                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300 relative">
+                <a href="#" class="flex-1 flex justify-center items-center h-full relative">
                      <!-- Clipboard Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                     <!-- Red checkmark badge -->
-                    <div class="absolute top-4 right-6 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <div class="absolute top-2 right-4 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                 </a>
-                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                <a id="profile-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </a>
-                <div id="profile-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
+                <a href="#" class="flex-1 flex justify-center items-center h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </a>
             </nav>
         </footer>
     </div>
-
-    <!-- 사이드 패널과 오버레이 -->
-    <div id="side-panel-overlay" class="side-panel-overlay"></div>
-    <div id="side-panel" class="side-panel">
-        <div class="side-panel-header">
-            <h2 id="panel-auth-text"></h2>
-            <button id="close-panel-btn">×</button>
-        </div>
-        <div class="side-panel-content">
-            <!-- 추가적인 마이페이지 컨텐츠가 여기에 들어갈 수 있습니다. -->
-            <button id="sign-out-btn" class="hidden w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300">
-                로그아웃
-            </button>
-        </div>
-    </div>
-
-
+    
     <!-- 알림 모달 -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
@@ -382,7 +409,38 @@
             <button id="modal-close-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md">확인</button>
         </div>
     </div>
+    
+    <!-- 사이드 패널 (로그인/마이페이지) -->
+    <div id="side-panel-overlay" class="side-panel-overlay">
+        <div id="side-panel" class="side-panel">
+            <div class="side-panel-header">
+                <h2 id="side-panel-title">마이페이지</h2>
+                <button id="side-panel-close-btn">&times;</button>
+            </div>
+            <div class="side-panel-content">
+                <p id="panel-user-info" class="text-center text-sm mb-4">로그인 정보가 없습니다.</p>
+                <div class="flex flex-col gap-4">
+                    <div class="stat">
+                        <p>현재 레벨</p>
+                        <span id="panel-level-value">1</span>
+                    </div>
+                    <div class="stat">
+                        <p>총 감축량</p>
+                        <span id="panel-ghg-reduced-value">0g</span>
+                    </div>
+                </div>
+                <button id="sign-out-btn" class="mt-8 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                    로그아웃
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Chatbase 채팅 풍선 스크립트 -->
+    <script>
+      (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="KwLJdboX39BEnTOig8OKU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -417,7 +475,7 @@
             lifeForce: 0,
             ghgReduced: 0, // 그램(g) 단위
         };
-
+        
         // 레벨업에 필요한 생명력 정의
         const levelThresholds = {
             2: 100,
@@ -444,12 +502,16 @@
         const modalTitle = document.getElementById("modal-title");
         const modalMessage = document.getElementById("modal-message");
         const modalCloseBtn = document.getElementById("modal-close-btn");
-        const sidePanel = document.getElementById('side-panel');
-        const sidePanelOverlay = document.getElementById('side-panel-overlay');
-        const closePanelBtn = document.getElementById('close-panel-btn');
-        const panelAuthText = document.getElementById('panel-auth-text');
-        const signOutBtn = document.getElementById('sign-out-btn');
-        
+
+        // 사이드 패널 관련 요소
+        const sidePanelOverlay = document.getElementById("side-panel-overlay");
+        const sidePanel = document.getElementById("side-panel");
+        const sidePanelCloseBtn = document.getElementById("side-panel-close-btn");
+        const signOutBtn = document.getElementById("sign-out-btn");
+        const panelUserInfo = document.getElementById("panel-user-info");
+        const panelLevelValue = document.getElementById("panel-level-value");
+        const panelGhgReducedValue = document.getElementById("panel-ghg-reduced-value");
+
         // Firebase 및 Realtime Database 초기화
         async function initializeFirebase() {
             try {
@@ -469,11 +531,7 @@
                         // UI 업데이트
                         userInfoDisplayEl.textContent = `환영합니다, ${userName}님!`;
                         dbStatusEl.textContent = "Realtime Database 연결 완료!";
-
-                        // 사이드 패널 UI 업데이트
-                        panelAuthText.textContent = userName;
-                        panelAuthText.style.cursor = 'pointer';
-                        panelAuthText.onclick = () => showModal("마이페이지", "마이페이지 기능은 아직 개발 중입니다.");
+                        panelUserInfo.textContent = `${userName}님, 환영합니다!`;
                         signOutBtn.style.display = 'block';
 
                         // 로그인 시 데이터 불러오기
@@ -488,11 +546,7 @@
                         // UI 업데이트
                         userInfoDisplayEl.textContent = "로그인하고 오름을 키워보세요!";
                         dbStatusEl.textContent = "로그인 대기 중...";
-                        
-                        // 사이드 패널 UI 업데이트
-                        panelAuthText.textContent = "로그인하세요";
-                        panelAuthText.style.cursor = 'pointer';
-                        panelAuthText.onclick = handleGoogleSignIn;
+                        panelUserInfo.textContent = "로그인 정보가 없습니다.";
                         signOutBtn.style.display = 'none';
                         
                         // 상태 초기화
@@ -543,33 +597,6 @@
             });
         }
         
-        // Google 로그인 팝업
-        async function handleGoogleSignIn() {
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithPopup(auth, provider);
-                hideSidePanel();
-            } catch (error) {
-                console.error("Google 로그인 오류:", error);
-                if (error.code === 'auth/unauthorized-domain') {
-                    showModal("로그인 오류", "Firebase 콘솔에서 현재 접속 도메인을 '승인된 도메인'에 추가해야 합니다.");
-                } else {
-                    showModal("로그인 오류", `로그인에 실패했습니다: ${error.message}`);
-                }
-            }
-        }
-
-        // 로그아웃
-        async function handleSignOut() {
-            try {
-                await signOut(auth);
-                hideSidePanel();
-            } catch (error) {
-                console.error("로그아웃 오류:", error);
-                showModal("로그아웃 오류", `로그아웃에 실패했습니다: ${error.message}`);
-            }
-        }
-
         function showModal(title, message) {
             modalTitle.textContent = title;
             modalMessage.textContent = message;
@@ -579,23 +606,6 @@
         modalCloseBtn.addEventListener('click', () => {
             modalOverlay.style.display = 'none';
         });
-
-        // 사이드 패널 토글 함수
-        function toggleSidePanel() {
-            sidePanel.classList.toggle('active');
-            sidePanelOverlay.classList.toggle('active');
-        }
-
-        function hideSidePanel() {
-            sidePanel.classList.remove('active');
-            sidePanelOverlay.classList.remove('active');
-        }
-
-        // 이벤트 리스너 연결
-        profileIconWrapper.addEventListener('click', toggleSidePanel);
-        closePanelBtn.addEventListener('click', hideSidePanel);
-        sidePanelOverlay.addEventListener('click', hideSidePanel);
-        signOutBtn.addEventListener('click', handleSignOut);
 
         function startSensorsAndGame() {
             let speed = 0;
@@ -790,15 +800,49 @@
 
         // 화면의 모든 정보를 현재 상태에 맞게 업데이트하는 함수
         function updateDisplay() {
-            // 대시보드 숫자 업데이트
+            // 메인 대시보드 숫자 업데이트
             levelValue.textContent = currentState.level;
             lifeForceValue.textContent = currentState.lifeForce;
             ghgReducedValue.textContent = `${currentState.ghgReduced}g`;
+            
+            // 사이드 패널의 숫자 업데이트
+            panelLevelValue.textContent = currentState.level;
+            panelGhgReducedValue.textContent = `${currentState.ghgReduced}g`;
 
             // 오름의 시각적 스타일 업데이트 (CSS 클래스 변경)
             oreumElement.className = 'oreum'; // 초기화
             oreumElement.classList.add(`level-${currentState.level}`);
         }
+
+        // 사이드 패널 열기
+        function openSidePanel() {
+            sidePanelOverlay.classList.add('active');
+            sidePanel.classList.add('active');
+        }
+
+        // 사이드 패널 닫기
+        function closeSidePanel() {
+            sidePanelOverlay.classList.remove('active');
+            sidePanel.classList.remove('active');
+        }
+
+        // 이벤트 리스너
+        profileIconWrapper.addEventListener('click', openSidePanel);
+        sidePanelCloseBtn.addEventListener('click', closeSidePanel);
+        sidePanelOverlay.addEventListener('click', (e) => {
+            if (e.target === sidePanelOverlay) {
+                closeSidePanel();
+            }
+        });
+
+        signOutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                showModal("로그아웃", "성공적으로 로그아웃 되었습니다.");
+                closeSidePanel();
+            }).catch((error) => {
+                showModal("로그아웃 실패", `오류: ${error.message}`);
+            });
+        });
 
         // 초기 화면 설정
         window.addEventListener('load', initializeFirebase);
