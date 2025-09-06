@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 탄소 오름 - 성장 시뮬레이션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 기본 폰트 및 레이아웃 설정 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f8ff; /* 하늘색 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            padding: 20px;
+        }
+
+        .simulation-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            color: #2c5b2c;
+            margin-top: 0;
+        }
+
+        /* 오름이 위치할 배경 */
+        .oreum-background {
+            background: linear-gradient(to top, #abddaa, #d9ead3);
+            width: 100%;
+            height: 250px;
+            margin: 20px 0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 오름 본체 스타일 */
+        .oreum {
+            width: 200px;
+            height: 100px;
+            background-color: #a38b79; /* Lv.1 흙색 */
+            border-radius: 100px 100px 0 0;
+            transition: all 0.7s ease-in-out;
+            position: relative;
+        }
+        
+        /* 나무 요소를 위한 컨테이너 */
+        .tree-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* 나무 스타일 (초기에는 숨김) */
+        .tree {
+            position: absolute;
+            bottom: 80%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .tree .trunk {
+            width: 6px;
+            height: 20px;
+            background-color: #5c3a21;
+            position: absolute;
+            bottom: -20px;
+        }
+        .tree .leaves {
+            width: 25px;
+            height: 35px;
+            background-color: #2e6b2e;
+            border-radius: 50%;
+        }
+
+        #tree1 { left: 30%; }
+        #tree2 { left: 60%; }
+
+        /* 레벨별 오름 스타일 변화 */
+        .oreum.level-2 {
+            background-color: #8b9a79; /* 흙 + 연두색 */
+            height: 120px;
+        }
+        .oreum.level-3 {
+            background-color: #72a172; /* 초록색 */
+            height: 140px;
+        }
+        .oreum.level-3 #tree1 { opacity: 1; } /* 3레벨에 첫번째 나무 등장 */
+        
+        .oreum.level-4 {
+            background-color: #4a7e4a; /* 짙은 초록색 */
+            height: 160px;
+        }
+        .oreum.level-4 #tree1, .oreum.level-4 #tree2 { opacity: 1; } /* 4레벨에 두번째 나무 등장 */
+        
+        .oreum.level-5 {
+            background: linear-gradient(to top, #2c5b2c, #4a7e4a); /* 더 풍성한 초록색 */
+            height: 180px;
+        }
+        .oreum.level-5 #tree1, .oreum.level-5 #tree2 { opacity: 1; }
+
+        /* 정보 대시보드 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            font-size: 1rem;
+        }
+        .stat span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a7e4a;
+        }
+        
+        /* 센서 대시보드 */
+        .sensor-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .sensor-dashboard p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .sensor-dashboard .value {
+            font-weight: bold;
+            color: #2c5b2c;
+        }
+        
+        /* 활동 로그 */
+        .log-container {
+            margin-top: 20px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 10px;
+            height: 80px;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .log-container p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        /* 알림 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            text-align: center;
+        }
+
+        /* 사이드 패널 관련 스타일 */
+        .side-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .side-panel-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px; /* 원하는 폭으로 조정 */
+            height: 100%;
+            background-color: #2d3748; /* 진한 회색 */
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            color: white;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-panel.active {
+            transform: translateX(0);
+        }
+
+        .side-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .side-panel-header h2 {
+            font-weight: bold;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .side-panel-header h2:hover {
+            color: #a0aec0;
+        }
+
+        .side-panel-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .side-panel-content {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="simulation-container">
+        
+        <!-- 게임 컨텐츠가 표시될 메인 섹션 -->
+        <!-- 'hidden' 클래스를 제거하여 로그인 없이도 오름이 보이게 수정 -->
+        <div id="game-display-area" class="h-full flex flex-col justify-between">
+            <header>
+                <h1>나의 탄소 오름</h1>
+            </header>
+            
+            <main class="flex-grow flex flex-col items-center justify-center">
+                <div class="oreum-background">
+                    <div id="oreum" class="oreum level-1">
+                        <div class="tree-container">
+                            <div id="tree1" class="tree">
+                                <div class="trunk"></div>
+                                <div class="leaves"></div>
+                            </div>
+                            <div id="tree2" class="tree">
+                                <div class="trunk"></div>
+                                <div class="leaves"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- 정보 대시보드 -->
+            <div class="dashboard">
+                <div class="stat">레벨 <span id="level-value">1</span></div>
+                <div class="stat">생명력 <span id="life-force-value">0</span></div>
+                <div class="stat">감축량 <span id="ghg-reduced-value">0g</span></div>
+            </div>
+            
+            <!-- 센서 대시보드 -->
+            <div class="sensor-dashboard">
+                <p>현재 이동수단: <span id="transport-display" class="font-bold text-blue-600 animate-pulse">대기 중...</span></p>
+                <p>현재 속도: <span id="speed-display" class="value">0 m/s</span></p>
+                <p>가속도: <span id="acc-display" class="value">0 m/s²</span></p>
+                <!-- 로그인 상태에 따라 다른 메시지를 표시하도록 변경 -->
+                <p id="user-info-display" class="text-xs truncate text-gray-400">로그인하고 오름을 키워보세요!</p>
+                <p id="db-status" class="text-xs text-gray-400">Firebase 초기화 중...</p>
+            </div>
+
+            <!-- 활동 로그 -->
+            <div class="log-container" id="log-container">
+                <p>오름을 키워주세요!</p>
+            </div>
+
+            <!-- 로그아웃 버튼 -->
+            <button id="sign-out-btn" class="hidden bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
+                로그아웃
+            </button>
+        </div>
+
+        <!-- 로그인 섹션 (항상 숨김) -->
+        <div id="auth-section" class="flex flex-col items-center justify-center p-8 w-full h-full hidden">
+            <p id="auth-status" class="mb-4 text-gray-700">로그인해주세요.</p>
+        </div>
+        
+        <!-- 하단 내비게이션 바 -->
+        <footer class="w-full border-t border-gray-300 bg-white absolute bottom-0">
+            <nav class="flex justify-around items-center h-20 text-gray-500">
+                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </a>
+                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300 relative">
+                     <!-- Clipboard Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    <!-- Red checkmark badge -->
+                    <div class="absolute top-4 right-6 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                </a>
+                <a href="#" class="flex-1 flex justify-center items-center h-full border-r border-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </a>
+                <div id="profile-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- 사이드 패널과 오버레이 -->
+    <div id="side-panel-overlay" class="side-panel-overlay"></div>
+    <div id="side-panel" class="side-panel">
+        <div class="side-panel-header">
+            <h2 id="panel-auth-text"></h2>
+            <button id="close-panel-btn">×</button>
+        </div>
+        <div class="side-panel-content">
+            <!-- 추가적인 마이페이지 컨텐츠가 여기에 들어갈 수 있습니다. -->
+            <button id="sign-out-btn" class="hidden w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300">
+                로그아웃
+            </button>
+        </div>
+    </div>
+
+
+    <!-- 알림 모달 -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <h3 id="modal-title" class="font-bold text-lg mb-2"></h3>
+            <p id="modal-message" class="text-sm text-gray-600 mb-4"></p>
+            <button id="modal-close-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md">확인</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // Realtime Database를 사용하도록 변경
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
+        // Firebase 설정: 이 부분에 사용자의 프로젝트 정보를 붙여넣어야 합니다.
+        // Firebase 콘솔의 프로젝트 설정에서 "앱" 섹션에 있는 "SDK 설정 및 구성"의 내용을 복사하여 붙여넣으세요.
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwr1j5-SokeoEdaBL0uGejzZLLYW4IHLg",
+            authDomain: "eco-vision-db.firebaseapp.com",
+            databaseURL: "https://eco-vision-db-default-rtdb.firebaseio.com",
+            projectId: "eco-vision-db",
+            storageBucket: "eco-vision-db.firebasestorage.app",
+            messagingSenderId: "340035289683",
+            appId: "1:340035289683:web:dd65ba6bab22e91029fca6",
+            measurementId: "G-8ZN69L0H1C"
+        };
+        
+        // 전역 상태 변수
+        let db, auth;
+        let userId;
+        let userName; // 사용자 이름을 저장할 변수
+        let isSaving = false;
+        let lastSaveTime = 0;
+        const SAVE_INTERVAL = 60000; // 1분 (60000ms)마다 데이터 저장
+        let lastSpeed = 0; // 이전에 감지된 속도를 저장하는 변수 (m/s)
+        
+        // 현재 오름 상태 변수 (로그아웃 시 초기화됨)
+        let currentState = {
+            level: 1,
+            lifeForce: 0,
+            ghgReduced: 0, // 그램(g) 단위
+        };
+
+        // 레벨업에 필요한 생명력 정의
+        const levelThresholds = {
+            2: 100,
+            3: 300,
+            4: 700,
+            5: 1500,
+        };
+
+        // UI 요소 가져오기
+        const authSection = document.getElementById('auth-section');
+        const gameDisplayArea = document.getElementById('game-display-area');
+        const profileIconWrapper = document.getElementById('profile-icon-wrapper');
+        const oreumElement = document.getElementById('oreum');
+        const levelValue = document.getElementById('level-value');
+        const lifeForceValue = document.getElementById('life-force-value');
+        const ghgReducedValue = document.getElementById('ghg-reduced-value');
+        const logContainer = document.getElementById('log-container');
+        const speedDisplayEl = document.getElementById("speed-display");
+        const accDisplayEl = document.getElementById("acc-display");
+        const dbStatusEl = document.getElementById("db-status");
+        const userInfoDisplayEl = document.getElementById("user-info-display");
+        const transportDisplayEl = document.getElementById("transport-display");
+        const modalOverlay = document.getElementById("modal-overlay");
+        const modalTitle = document.getElementById("modal-title");
+        const modalMessage = document.getElementById("modal-message");
+        const modalCloseBtn = document.getElementById("modal-close-btn");
+        const sidePanel = document.getElementById('side-panel');
+        const sidePanelOverlay = document.getElementById('side-panel-overlay');
+        const closePanelBtn = document.getElementById('close-panel-btn');
+        const panelAuthText = document.getElementById('panel-auth-text');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        
+        // Firebase 및 Realtime Database 초기화
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                // Realtime Database로 변경
+                db = getDatabase(app);
+
+                // onAuthStateChanged 리스너 설정: 로그인/로그아웃 상태 변화를 감지
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // 사용자 로그인 상태
+                        console.log("User is signed in:", user);
+                        userId = user.uid;
+                        userName = user.displayName || `user-${user.uid.substring(0, 8)}`; // 사용자 이름이 없으면 UID를 사용
+                        
+                        // UI 업데이트
+                        userInfoDisplayEl.textContent = `환영합니다, ${userName}님!`;
+                        dbStatusEl.textContent = "Realtime Database 연결 완료!";
+
+                        // 사이드 패널 UI 업데이트
+                        panelAuthText.textContent = userName;
+                        panelAuthText.style.cursor = 'pointer';
+                        panelAuthText.onclick = () => showModal("마이페이지", "마이페이지 기능은 아직 개발 중입니다.");
+                        signOutBtn.style.display = 'block';
+
+                        // 로그인 시 데이터 불러오기
+                        loadGameStateFromDB(userId, userName);
+                        
+                    } else {
+                        // 사용자 로그아웃 상태
+                        console.log("User is signed out.");
+                        userId = null;
+                        userName = null;
+
+                        // UI 업데이트
+                        userInfoDisplayEl.textContent = "로그인하고 오름을 키워보세요!";
+                        dbStatusEl.textContent = "로그인 대기 중...";
+                        
+                        // 사이드 패널 UI 업데이트
+                        panelAuthText.textContent = "로그인하세요";
+                        panelAuthText.style.cursor = 'pointer';
+                        panelAuthText.onclick = handleGoogleSignIn;
+                        signOutBtn.style.display = 'none';
+                        
+                        // 상태 초기화
+                        currentState = { level: 1, lifeForce: 0, ghgReduced: 0 };
+                        updateDisplay();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase 초기화 오류:", error);
+                showModal("오류", `Firebase 연결 실패: ${error.message}`);
+                dbStatusEl.textContent = "Firebase 연결 실패";
+            }
+        }
+
+        // Realtime Database에서 게임 상태를 불러오는 함수
+        async function loadGameStateFromDB(currentUserId, currentUserName) {
+            dbStatusEl.textContent = "데이터 불러오는 중...";
+            
+            const userPath = `artifacts/${firebaseConfig.appId}/users-by-name/${currentUserName}`;
+            
+            const stateRef = ref(db, `${userPath}/game_state`);
+            
+            // onValue를 사용하여 실시간으로 데이터 변경을 감지
+            onValue(stateRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    currentState = {
+                        level: data.level || 1,
+                        lifeForce: data.lifeForce || 0,
+                        ghgReduced: data.ghgReduced || 0,
+                    };
+                    updateDisplay();
+                    dbStatusEl.textContent = "게임 상태 불러오기 성공!";
+                    logAction("저장된 게임 상태를 불러왔습니다.");
+                    startSensorsAndGame(); // 게임 상태를 불러온 후 센서 시작
+                } else {
+                    console.log("저장된 데이터가 없습니다. 새로운 게임을 시작합니다.");
+                    dbStatusEl.textContent = "새 게임 시작!";
+                    logAction("새 게임을 시작합니다.");
+                    startSensorsAndGame(); // 저장된 데이터가 없으면 즉시 센서 시작
+                }
+            }, (error) => {
+                console.error("데이터 불러오기 오류:", error);
+                dbStatusEl.textContent = "데이터 불러오기 오류";
+                showModal("오류", `데이터를 불러오지 못했습니다: ${error.message}`);
+                startSensorsAndGame(); // 오류가 발생해도 센서 시작
+            });
+        }
+        
+        // Google 로그인 팝업
+        async function handleGoogleSignIn() {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                hideSidePanel();
+            } catch (error) {
+                console.error("Google 로그인 오류:", error);
+                if (error.code === 'auth/unauthorized-domain') {
+                    showModal("로그인 오류", "Firebase 콘솔에서 현재 접속 도메인을 '승인된 도메인'에 추가해야 합니다.");
+                } else {
+                    showModal("로그인 오류", `로그인에 실패했습니다: ${error.message}`);
+                }
+            }
+        }
+
+        // 로그아웃
+        async function handleSignOut() {
+            try {
+                await signOut(auth);
+                hideSidePanel();
+            } catch (error) {
+                console.error("로그아웃 오류:", error);
+                showModal("로그아웃 오류", `로그아웃에 실패했습니다: ${error.message}`);
+            }
+        }
+
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalOverlay.style.display = 'flex';
+        }
+
+        modalCloseBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        // 사이드 패널 토글 함수
+        function toggleSidePanel() {
+            sidePanel.classList.toggle('active');
+            sidePanelOverlay.classList.toggle('active');
+        }
+
+        function hideSidePanel() {
+            sidePanel.classList.remove('active');
+            sidePanelOverlay.classList.remove('active');
+        }
+
+        // 이벤트 리스너 연결
+        profileIconWrapper.addEventListener('click', toggleSidePanel);
+        closePanelBtn.addEventListener('click', hideSidePanel);
+        sidePanelOverlay.addEventListener('click', hideSidePanel);
+        signOutBtn.addEventListener('click', handleSignOut);
+
+        function startSensorsAndGame() {
+            let speed = 0;
+            let accMagnitude = 0;
+            
+            transportDisplayEl.textContent = "감지 시작...";
+
+            // GPS 속도 감지
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    (pos) => {
+                        speed = pos.coords.speed || 0; // m/s
+                        speedDisplayEl.textContent = `${speed.toFixed(2)} m/s`;
+                        updateGameAndTransport(speed, accMagnitude);
+                    },
+                    (err) => { 
+                        transportDisplayEl.textContent = "GPS 오류"; 
+                        console.error("Geolocation Error:", err);
+                        
+                        let errorMessage = "위치 정보 접근이 거부되었거나 오류가 발생했습니다.";
+                        switch (err.code) {
+                            case err.PERMISSION_DENIED:
+                                errorMessage = "위치 정보 접근이 거부되었습니다. 브라우저 설정을 확인해주세요.";
+                                break;
+                            case err.POSITION_UNAVAILABLE:
+                                errorMessage = "위치 정보를 사용할 수 없습니다. GPS 신호가 약한 지역일 수 있습니다.";
+                                break;
+                            case err.TIMEOUT:
+                                errorMessage = "위치 정보 요청 시간이 초과되었습니다. 다시 시도해 주세요.";
+                                break;
+                        }
+                        showModal("위치 정보 오류", errorMessage);
+                    },
+                    { enableHighAccuracy: true, maximumAge: 500, timeout: 5000 }
+                );
+            } else {
+                transportDisplayEl.textContent = "GPS 미지원";
+                showModal("오류", "이 브라우저는 위치 정보(GPS)를 지원하지 않습니다.");
+            }
+
+            // 가속도 센서 감지
+            if (window.DeviceMotionEvent) {
+                window.addEventListener("devicemotion", (event) => {
+                    const acc = event.accelerationIncludingGravity;
+                    accMagnitude = Math.sqrt(acc.x ** 2 + acc.y ** 2 + acc.z ** 2);
+                    accDisplayEl.textContent = `${accMagnitude.toFixed(2)} m/s²`;
+                    updateGameAndTransport(speed, accMagnitude);
+                });
+            } else {
+                console.warn("DeviceMotionEvent를 지원하지 않는 브라우저입니다.");
+            }
+        }
+
+        // 오름 상태를 업데이트하는 핵심 로직
+        function updateGame(transportType) {
+            let lifeForceChange = 0;
+            let ghgChange = 0;
+            let logMessage = '';
+
+            switch (transportType) {
+                case "도보":
+                    lifeForceChange = 5;
+                    ghgChange = 50; // 가정: 10g CO2 당 1 생명력
+                    logMessage = `🚶‍♂️ 걸어서 탄소 감축! (+${lifeForceChange} 생명력)`;
+                    break;
+                case "자전거":
+                    lifeForceChange = 3;
+                    ghgChange = 30;
+                    logMessage = `🚲 자전거로 환경 보호! (+${lifeForceChange} 생명력)`;
+                    break;
+                case "차량":
+                    lifeForceChange = -5;
+                    ghgChange = 50;
+                    logMessage = `🚗 차량을 이용해 오름이 시들... (${lifeForceChange} 생명력)`;
+                    break;
+                default:
+                    return; // 해당되지 않는 이동수단은 업데이트하지 않음
+            }
+
+            // 상태 업데이트
+            currentState.lifeForce += lifeForceChange;
+            currentState.ghgReduced += ghgChange;
+
+            // 생명력이 음수가 되지 않도록 방지
+            if (currentState.lifeForce < 0) {
+                currentState.lifeForce = 0;
+            }
+
+            // 활동 로그 기록
+            logAction(logMessage);
+
+            // 레벨업 체크
+            checkLevelUp();
+            
+            // 화면 업데이트
+            updateDisplay();
+        }
+
+        // 이동수단 판단 및 Firebase에 저장하는 함수
+        async function updateGameAndTransport(speed, accMagnitude) {
+            // 사용자가 로그인하지 않았다면 데이터 저장 및 게임 업데이트를 중지
+            if (!userId) {
+                transportDisplayEl.textContent = "로그인 대기 중...";
+                return;
+            }
+
+            let transport = "탐지 중...";
+            const speed_kph = speed * 3.6; // m/s를 km/h로 변환
+            
+            // 이동수단 판단
+            if (speed_kph >= 30) {
+                transport = "차량";
+            } else if (speed_kph >= 10) {
+                transport = "자전거";
+            } else if (speed_kph >= 1) { // 1km/h 이상일 때 도보로 판단하도록 변경
+                transport = "도보";
+            } else {
+                transport = "정지 상태";
+            }
+
+            transportDisplayEl.textContent = transport;
+
+            // Firebase에 데이터 저장
+            const currentTime = Date.now();
+            if (db && !isSaving && (currentTime - lastSaveTime > SAVE_INTERVAL)) {
+                isSaving = true;
+                try {
+                    const data = {
+                        transport: transport,
+                        speed: speed,
+                        acceleration: accMagnitude,
+                        lifeForce: currentState.lifeForce,
+                        ghgReduced: currentState.ghgReduced,
+                        timestamp: new Date().toISOString() // Realtime DB는 Date 객체를 저장하지 못해 ISO 문자열로 변환
+                    };
+                    
+                    const userPath = `artifacts/${firebaseConfig.appId}/users-by-name/${userName}`;
+                    
+                    // 게임 상태를 별도의 위치에 저장 (덮어쓰기)
+                    await set(ref(db, `${userPath}/game_state`), {
+                        level: currentState.level,
+                        lifeForce: currentState.lifeForce,
+                        ghgReduced: currentState.ghgReduced,
+                    });
+                    
+                    // 이동 데이터를 별도의 컬렉션에 추가 (누적)
+                    await push(ref(db, `${userPath}/transport_data`), data);
+                    
+                    console.log("데이터 저장 성공:", data);
+                    dbStatusEl.textContent = "데이터 저장 완료!";
+
+                    // 감지된 이동수단에 따라 게임 상태 업데이트
+                    updateGame(transport);
+
+                    lastSaveTime = currentTime;
+                } catch (e) {
+                    console.error("Realtime Database에 문서 추가 중 오류 발생: ", e);
+                    dbStatusEl.textContent = "데이터 저장 오류";
+                } finally {
+                    isSaving = false;
+                }
+            }
+            
+            // 다음 감지를 위해 현재 속도를 lastSpeed에 저장
+            lastSpeed = speed;
+        }
+
+        // 활동 로그를 화면에 추가하는 함수
+        function logAction(text) {
+            const newLog = document.createElement('p');
+            newLog.textContent = text;
+            logContainer.prepend(newLog); // 최신 로그가 위에 보이도록
+            if (logContainer.children.length > 5) {
+                logContainer.removeChild(logContainer.lastElementChild);
+            }
+        }
+
+        // 레벨업 조건을 확인하고 처리하는 함수
+        function checkLevelUp() {
+            const nextLevel = currentState.level + 1;
+            // 다음 레벨이 존재하고, 현재 생명력이 필요조건을 충족하는 경우
+            if (levelThresholds[nextLevel] && currentState.lifeForce >= levelThresholds[nextLevel]) {
+                currentState.level = nextLevel;
+                // 레벨업 로그 기록
+                const levelUpLog = document.createElement('p');
+                levelUpLog.textContent = `🎉 축하합니다! 오름이 Level ${currentState.level}(으)로 성장했습니다!`;
+                levelUpLog.style.fontWeight = 'bold';
+                levelUpLog.style.color = '#2c5b2c';
+                logContainer.prepend(levelUpLog);
+            }
+        }
+
+        // 화면의 모든 정보를 현재 상태에 맞게 업데이트하는 함수
+        function updateDisplay() {
+            // 대시보드 숫자 업데이트
+            levelValue.textContent = currentState.level;
+            lifeForceValue.textContent = currentState.lifeForce;
+            ghgReducedValue.textContent = `${currentState.ghgReduced}g`;
+
+            // 오름의 시각적 스타일 업데이트 (CSS 클래스 변경)
+            oreumElement.className = 'oreum'; // 초기화
+            oreumElement.classList.add(`level-${currentState.level}`);
+        }
+
+        // 초기 화면 설정
+        window.addEventListener('load', initializeFirebase);
+    </script>
+</body>
+</html>
