@@ -29,7 +29,7 @@
             margin: 0;
             color: #333;
             /* 모바일에서는 패딩 없이 전체 화면을 사용 */
-            padding: 0; 
+            padding: 0;
         }
 
         .simulation-container {
@@ -236,6 +236,130 @@
             position: relative;
             animation: slideIn 0.5s ease-out;
         }
+        
+        /* 보상 모달 추가 */
+        #rewards-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #rewards-modal {
+            background-color: #d1d5db; /* 회색 배경 */
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            color: #1f2937;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .rewards-header {
+            background-color: #9ca3af; /* 짙은 회색 배경 */
+            padding: 1rem;
+            border-radius: 0.75rem;
+            color: white;
+            position: relative;
+        }
+        
+        .rewards-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .rewards-header p {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            z-index: 1;
+        }
+        
+        .progress-line {
+            height: 100%;
+            width: 0%;
+            background-color: #6366f1; /* 보라색 */
+            border-radius: 9999px;
+        }
+
+        .progress-circle {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            border: 4px solid #6366f1; /* 보라색 테두리 */
+            z-index: 2;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .reward-item {
+            display: flex;
+            align-items: center;
+            background-color: #60a5fa; /* 파란색 배경 */
+            color: white;
+            padding: 1rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            gap: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .reward-item.completed {
+            background-color: #16a34a; /* 초록색 배경 */
+            opacity: 0.8;
+        }
+        
+        .reward-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .reward-icon-container {
+            width: 30px;
+            height: 30px;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .reward-item.completed .reward-icon-container {
+            background-color: #dcfce7; /* 연두색 배경 */
+            color: #14532d;
+        }
 
         @keyframes slideIn {
             from {
@@ -248,7 +372,7 @@
             }
         }
         
-        #mission-modal h2 {
+        #mission-modal h2, #rewards-modal h2 {
             font-size: 2.2rem;
             font-weight: bold;
             color: #065f46;
@@ -264,6 +388,17 @@
             flex-direction: column;
             gap: 1rem;
             text-align: left;
+        }
+        
+        .mission-item.gemini-generated-item {
+            background-color: #dcfce7; /* 더 밝은 초록색 배경 */
+            border-left: 5px solid #10b981; /* 강조 표시 */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .mission-item {
@@ -291,7 +426,7 @@
             font-size: 0.9rem;
         }
         
-        .mission-close-btn {
+        .mission-close-btn, .rewards-close-btn {
             background-color: #065f46;
             color: white;
             padding: 0.75rem 2rem;
@@ -303,7 +438,7 @@
             transition: background-color 0.3s;
         }
         
-        .mission-close-btn:hover {
+        .mission-close-btn:hover, .rewards-close-btn:hover {
             background-color: #047857;
         }
         
@@ -508,11 +643,11 @@
                 <a id="mission-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 </a>
-               
                 <a id="profile-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </a>
-                <a href="#" class="flex-1 flex justify-center items-center h-full">
+                <!-- 보상 버튼 추가 -->
+                <a id="rewards-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                 </a>
             </nav>
@@ -570,7 +705,7 @@
         <div id="mission-modal">
             <h2>오늘의 미션</h2>
             <p class="text-gray-600">친환경 활동으로 생명력을 얻고 오름을 키워보세요!</p>
-            <ul class="mission-list">
+            <ul id="mission-list" class="mission-list">
                 <li class="mission-item">
                     <h3>🌳 나무 심기</h3>
                     <p>산이나 공원에 방문하여 나무 한 그루를 심어보세요.</p>
@@ -588,7 +723,40 @@
                     <p>일회용 컵 대신 텀블러, 비닐봉투 대신 장바구니를 사용하세요.</p>
                 </li>
             </ul>
+            <!-- Gemini API 호출 버튼 -->
+            <button id="generate-mission-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-full mt-4 transition-colors duration-300">
+                ✨ 새로운 미션 생성하기
+            </button>
+            <!-- 로딩 메시지 -->
+            <p id="gemini-loading" class="text-xs text-gray-500 mt-2 hidden">미션 생성 중...</p>
             <button id="mission-close-btn" class="mission-close-btn">닫기</button>
+        </div>
+    </div>
+
+    <!-- 보상 모달 -->
+    <div id="rewards-modal-overlay">
+        <div id="rewards-modal">
+            <div class="rewards-header">
+                <h2>오늘의 보상</h2>
+                <p>남은 보상 개수: <span id="rewards-count">6개</span></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div id="progress-line" class="progress-line"></div>
+                    </div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                </div>
+            </div>
+            
+            <div id="reward-list-container" class="flex flex-col gap-3 mt-4">
+                <!-- 보상 목록이 여기에 동적으로 추가됩니다 -->
+            </div>
+            
+            <button id="rewards-close-btn" class="rewards-close-btn">닫기</button>
         </div>
     </div>
 
@@ -631,6 +799,16 @@
             lifeForce: 0,
             ghgReduced: 0, // 그램(g) 단위
         };
+        
+        // 보상 목록 (초기 상태)
+        const rewardsList = [
+            { id: 'mission_3_clear', description: '미션 3개 클리어', completed: false },
+            { id: 'mission_5_clear', description: '미션 5개 클리어', completed: false },
+            { id: 'bike_10km', description: '자전거로 10km 이동', completed: false },
+            { id: 'walk_1km', description: '도보로 1km 이동', completed: false },
+            { id: 'no_plastic_day', description: '플라스틱 사용하지 않는 날', completed: false },
+            { id: 'bring_tumbler', description: '개인 컵 사용하기', completed: false },
+        ];
         
         // 레벨업에 필요한 생명력 정의 (최대 30레벨까지 확장)
         // 기존 패턴 (차이가 2배씩 증가)을 유지하여 계산
@@ -676,6 +854,16 @@
         const missionIconWrapper = document.getElementById("mission-icon-wrapper");
         const missionModalOverlay = document.getElementById("mission-modal-overlay");
         const missionCloseBtn = document.getElementById("mission-close-btn");
+        const generateMissionBtn = document.getElementById("generate-mission-btn");
+        const geminiLoadingEl = document.getElementById("gemini-loading");
+        const missionListEl = document.getElementById("mission-list");
+        
+        // 보상 모달 관련 요소 추가
+        const rewardsIconWrapper = document.getElementById("rewards-icon-wrapper");
+        const rewardsModalOverlay = document.getElementById("rewards-modal-overlay");
+        const rewardsCloseBtn = document.getElementById("rewards-close-btn");
+        const rewardListContainer = document.getElementById('reward-list-container');
+        const rewardsCountEl = document.getElementById('rewards-count');
 
         // Firebase 및 Realtime Database 초기화
         async function initializeFirebase() {
@@ -870,6 +1058,9 @@
             
             // 화면 업데이트
             updateDisplay();
+            
+            // 보상 완료 상태 확인 (예시)
+            checkRewardsStatus();
         }
 
         // 이동수단 판단 및 Firebase에 저장하는 함수
@@ -982,6 +1173,120 @@
             oreumElement.classList.add(`level-${currentState.level}`);
         }
         
+        // 보상 목록을 화면에 렌더링하는 함수
+        function renderRewards() {
+            rewardListContainer.innerHTML = ''; // 기존 목록 초기화
+            rewardsList.forEach(reward => {
+                const rewardItem = document.createElement('div');
+                const completedClass = reward.completed ? 'completed' : '';
+                
+                rewardItem.className = `reward-item ${completedClass}`;
+                rewardItem.innerHTML = `
+                    <div class="reward-icon-container">
+                        ${reward.completed ? 
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' :
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+                        }
+                    </div>
+                    <p>${reward.description}</p>
+                `;
+                rewardListContainer.appendChild(rewardItem);
+            });
+            
+            const completedCount = rewardsList.filter(r => r.completed).length;
+            rewardsCountEl.textContent = `${rewardsList.length - completedCount}개`;
+        }
+        
+        // 보상 완료 상태를 확인하는 함수 (예시)
+        function checkRewardsStatus() {
+            // 이 함수는 실제 미션 완료 로직과 연결되어야 합니다.
+            // 여기서는 단순히 예시로 GHGs 감축량에 따라 보상을 완료 처리합니다.
+            
+            if (currentState.ghgReduced >= 150) {
+                const reward = rewardsList.find(r => r.id === 'mission_3_clear');
+                if (reward) reward.completed = true;
+            }
+            if (currentState.ghgReduced >= 250) {
+                const reward = rewardsList.find(r => r.id === 'mission_5_clear');
+                if (reward) reward.completed = true;
+            }
+            if (currentState.ghgReduced >= 100) {
+                const reward = rewardsList.find(r => r.id === 'walk_1km');
+                if (reward) reward.completed = true;
+            }
+            
+            // 보상 탭이 열릴 때마다 최신 상태로 다시 렌더링
+            renderRewards();
+        }
+
+        /**
+         * ✨ Gemini API를 사용하여 새로운 친환경 미션을 생성합니다.
+         */
+        async function generateNewMission() {
+            const userPrompt = "Create a single, creative, and unique eco-friendly mission. The mission must be a single sentence in Korean and related to daily life. Do not include titles or headings. Only provide the mission text.";
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            // 로딩 상태 시작
+            generateMissionBtn.disabled = true;
+            geminiLoadingEl.classList.remove('hidden');
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: {
+                    parts: [{ text: "당신은 사람들의 환경 보호를 돕는 친절한 안내자입니다." }]
+                },
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const missionText = candidate.content.parts[0].text.trim();
+                    addNewMissionToUI(missionText);
+                    logAction("✨ 새로운 미션이 생성되었습니다!");
+                } else {
+                    throw new Error("API 응답에 내용이 없습니다.");
+                }
+
+            } catch (error) {
+                console.error("Gemini API 호출 오류:", error);
+                showModal("미션 생성 오류", `새로운 미션을 만들지 못했습니다: ${error.message}`);
+            } finally {
+                // 로딩 상태 종료
+                generateMissionBtn.disabled = false;
+                geminiLoadingEl.classList.add('hidden');
+            }
+        }
+        
+        /**
+         * 생성된 미션을 UI에 추가합니다.
+         */
+        function addNewMissionToUI(missionText) {
+            const newMissionItem = document.createElement('li');
+            newMissionItem.className = 'mission-item gemini-generated-item';
+            newMissionItem.innerHTML = `<h3>✨ 오늘의 미션 (Gemini)</h3><p>${missionText}</p>`;
+            
+            // 기존 미션 목록 맨 위에 추가
+            missionListEl.prepend(newMissionItem);
+
+            // 미션이 너무 많아지면 오래된 미션 제거
+            if (missionListEl.children.length > 6) {
+                missionListEl.removeChild(missionListEl.lastElementChild);
+            }
+        }
+
         // Google 로그인 함수
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
@@ -1015,6 +1320,17 @@
         function closeMissionModal() {
             missionModalOverlay.style.display = 'none';
         }
+        
+        // 보상 모달 열기
+        function openRewardsModal() {
+            rewardsModalOverlay.style.display = 'flex';
+            checkRewardsStatus(); // 모달이 열릴 때마다 보상 상태 업데이트
+        }
+
+        // 보상 모달 닫기
+        function closeRewardsModal() {
+            rewardsModalOverlay.style.display = 'none';
+        }
 
         // 이벤트 리스너
         profileIconWrapper.addEventListener('click', openSidePanel);
@@ -1032,6 +1348,17 @@
                 closeMissionModal();
             }
         });
+        
+        // 보상 버튼 클릭 이벤트 리스너 추가
+        rewardsIconWrapper.addEventListener('click', openRewardsModal);
+        rewardsCloseBtn.addEventListener('click', closeRewardsModal);
+        rewardsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === rewardsModalOverlay) {
+                closeRewardsModal();
+            }
+        });
+
+        generateMissionBtn.addEventListener('click', generateNewMission);
 
         googleSignInBtn.addEventListener('click', signInWithGoogle);
         signOutBtn.addEventListener('click', () => {
