@@ -208,6 +208,104 @@
             max-width: 300px;
             text-align: center;
         }
+
+        /* 미션 모달 */
+        #mission-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #mission-modal {
+            background: linear-gradient(135deg, #f0fdf4, #d1fae5);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            color: #1f2937;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        #mission-modal h2 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #065f46;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .mission-list {
+            margin-top: 1.5rem;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .mission-item {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #d1fae5;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .mission-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .mission-item h3 {
+            font-weight: bold;
+            color: #047857;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .mission-item p {
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+        
+        .mission-close-btn {
+            background-color: #065f46;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            margin-top: 2rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .mission-close-btn:hover {
+            background-color: #047857;
+        }
         
         /* 사이드 패널 관련 스타일 */
         .side-panel-overlay {
@@ -277,12 +375,19 @@
         }
         .side-panel-content {
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
+        
         .side-panel-content .stat {
             background-color: #4a5568;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
         }
         .side-panel-content .stat p {
             font-size: 0.9rem;
@@ -293,6 +398,26 @@
             font-size: 1.2rem;
             font-weight: 700;
             color: #90f58d;
+        }
+        
+        .google-btn {
+            background-color: white;
+            color: #4a5568;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .google-btn:hover {
+            transform: translateY(-2px);
         }
 
         /* 미디어 쿼리를 사용해 반응형 디자인 적용 */
@@ -369,19 +494,19 @@
                 <p>오름을 키워주세요!</p>
             </div>
         </div>
-
-        <!-- 로그인 섹션 (항상 숨김) -->
-        <div id="auth-section" class="flex flex-col items-center justify-center p-8 w-full h-full hidden">
-            <p id="auth-status" class="mb-4 text-gray-700">로그인해주세요.</p>
-        </div>
         
         <!-- 하단 내비게이션 바 -->
         <footer class="w-full border-t border-gray-300 bg-white absolute bottom-0">
             <!-- divide-x 클래스로 아이콘 사이의 세로선 자동 생성 -->
             <nav class="flex justify-around items-center h-14 sm:h-16 text-gray-500 divide-x divide-gray-300">
                 <!-- flex-1 flex justify-center items-center 클래스를 사용하여 아이콘을 중앙에 배치 -->
+                <!-- 홈 버튼 -->
                 <a href="#" class="flex-1 flex justify-center items-center h-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </a>
+                <!-- 미션 버튼 추가 -->
+                <a id="mission-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 </a>
                 <a href="#" class="flex-1 flex justify-center items-center h-full relative">
                      <!-- Clipboard Icon -->
@@ -418,21 +543,59 @@
                 <button id="side-panel-close-btn">&times;</button>
             </div>
             <div class="side-panel-content">
-                <p id="panel-user-info" class="text-center text-sm mb-4">로그인 정보가 없습니다.</p>
-                <div class="flex flex-col gap-4">
-                    <div class="stat">
-                        <p>현재 레벨</p>
-                        <span id="panel-level-value">1</span>
-                    </div>
-                    <div class="stat">
-                        <p>총 감축량</p>
-                        <span id="panel-ghg-reduced-value">0g</span>
-                    </div>
+                <!-- 로그인 상태에 따라 내용이 동적으로 변경됩니다 -->
+                <div id="logged-out-view">
+                    <p class="text-center text-sm mb-4">로그인하고 오름을 키워보세요!</p>
+                    <button id="google-sign-in-btn" class="google-btn">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-6 h-6">
+                        <span>Google 계정으로 로그인</span>
+                    </button>
                 </div>
-                <button id="sign-out-btn" class="mt-8 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
-                    로그아웃
-                </button>
+                
+                <div id="logged-in-view" class="hidden">
+                    <p id="panel-user-info" class="text-center text-sm mb-4">로그인 정보가 없습니다.</p>
+                    <div class="flex flex-col gap-4">
+                        <div class="stat">
+                            <p>현재 레벨</p>
+                            <span id="panel-level-value">1</span>
+                        </div>
+                        <div class="stat">
+                            <p>총 감축량</p>
+                            <span id="panel-ghg-reduced-value">0g</span>
+                        </div>
+                    </div>
+                    <button id="sign-out-btn" class="mt-8 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                        로그아웃
+                    </button>
+                </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- 미션 모달 -->
+    <div id="mission-modal-overlay">
+        <div id="mission-modal">
+            <h2>오늘의 미션</h2>
+            <p class="text-gray-600">친환경 활동으로 생명력을 얻고 오름을 키워보세요!</p>
+            <ul class="mission-list">
+                <li class="mission-item">
+                    <h3>🌳 나무 심기</h3>
+                    <p>산이나 공원에 방문하여 나무 한 그루를 심어보세요.</p>
+                </li>
+                <li class="mission-item">
+                    <h3>💡 전등 끄기</h3>
+                    <p>불필요한 조명은 끄고 에너지를 절약하세요.</p>
+                </li>
+                <li class="mission-item">
+                    <h3>🚰 물 절약</h3>
+                    <p>양치할 때 컵 사용하기, 샤워 시간 줄이기 등 물을 아껴 쓰세요.</p>
+                </li>
+                <li class="mission-item">
+                    <h3>🛍️ 다회용품 사용</h3>
+                    <p>일회용 컵 대신 텀블러, 비닐봉투 대신 장바구니를 사용하세요.</p>
+                </li>
+            </ul>
+            <button id="mission-close-btn" class="mission-close-btn">닫기</button>
         </div>
     </div>
 
@@ -476,17 +639,18 @@
             ghgReduced: 0, // 그램(g) 단위
         };
         
-        // 레벨업에 필요한 생명력 정의
+        // 레벨업에 필요한 생명력 정의 (최대 30레벨까지 확장)
+        // 기존 패턴 (차이가 2배씩 증가)을 유지하여 계산
         const levelThresholds = {
-            2: 100,
-            3: 300,
-            4: 700,
-            5: 1500,
+            2: 100, 3: 300, 4: 700, 5: 1500, 6: 3100, 7: 6300, 8: 12700,
+            9: 25500, 10: 51100, 11: 102300, 12: 204700, 13: 409500,
+            14: 819100, 15: 1638300, 16: 3276700, 17: 6553500, 18: 13107100,
+            19: 26214300, 20: 52428700, 21: 104857500, 22: 209715100,
+            23: 419430300, 24: 838860700, 25: 1677721500, 26: 3355443100,
+            27: 6710886300, 28: 13421772700, 29: 26843545500, 30: 53687091100,
         };
 
         // UI 요소 가져오기
-        const authSection = document.getElementById('auth-section');
-        const gameDisplayArea = document.getElementById('game-display-area');
         const profileIconWrapper = document.getElementById('profile-icon-wrapper');
         const oreumElement = document.getElementById('oreum');
         const levelValue = document.getElementById('level-value');
@@ -502,15 +666,23 @@
         const modalTitle = document.getElementById("modal-title");
         const modalMessage = document.getElementById("modal-message");
         const modalCloseBtn = document.getElementById("modal-close-btn");
-
+        
         // 사이드 패널 관련 요소
         const sidePanelOverlay = document.getElementById("side-panel-overlay");
         const sidePanel = document.getElementById("side-panel");
         const sidePanelCloseBtn = document.getElementById("side-panel-close-btn");
+        const loggedOutView = document.getElementById("logged-out-view");
+        const loggedInView = document.getElementById("logged-in-view");
+        const googleSignInBtn = document.getElementById("google-sign-in-btn");
         const signOutBtn = document.getElementById("sign-out-btn");
         const panelUserInfo = document.getElementById("panel-user-info");
         const panelLevelValue = document.getElementById("panel-level-value");
         const panelGhgReducedValue = document.getElementById("panel-ghg-reduced-value");
+
+        // 미션 모달 관련 요소 추가
+        const missionIconWrapper = document.getElementById("mission-icon-wrapper");
+        const missionModalOverlay = document.getElementById("mission-modal-overlay");
+        const missionCloseBtn = document.getElementById("mission-close-btn");
 
         // Firebase 및 Realtime Database 초기화
         async function initializeFirebase() {
@@ -532,7 +704,9 @@
                         userInfoDisplayEl.textContent = `환영합니다, ${userName}님!`;
                         dbStatusEl.textContent = "Realtime Database 연결 완료!";
                         panelUserInfo.textContent = `${userName}님, 환영합니다!`;
-                        signOutBtn.style.display = 'block';
+                        
+                        loggedOutView.classList.add('hidden');
+                        loggedInView.classList.remove('hidden');
 
                         // 로그인 시 데이터 불러오기
                         loadGameStateFromDB(userId, userName);
@@ -546,8 +720,9 @@
                         // UI 업데이트
                         userInfoDisplayEl.textContent = "로그인하고 오름을 키워보세요!";
                         dbStatusEl.textContent = "로그인 대기 중...";
-                        panelUserInfo.textContent = "로그인 정보가 없습니다.";
-                        signOutBtn.style.display = 'none';
+                        
+                        loggedInView.classList.add('hidden');
+                        loggedOutView.classList.remove('hidden');
                         
                         // 상태 초기화
                         currentState = { level: 1, lifeForce: 0, ghgReduced: 0 };
@@ -667,17 +842,17 @@
 
             switch (transportType) {
                 case "도보":
-                    lifeForceChange = 5;
-                    ghgChange = 50; // 가정: 10g CO2 당 1 생명력
+                    lifeForceChange = 10; // 요청에 따라 10으로 변경
+                    ghgChange = 50; 
                     logMessage = `🚶‍♂️ 걸어서 탄소 감축! (+${lifeForceChange} 생명력)`;
                     break;
                 case "자전거":
-                    lifeForceChange = 3;
+                    lifeForceChange = 7; // 요청에 따라 7로 변경
                     ghgChange = 30;
                     logMessage = `🚲 자전거로 환경 보호! (+${lifeForceChange} 생명력)`;
                     break;
                 case "차량":
-                    lifeForceChange = -5;
+                    lifeForceChange = -10; // 요청에 따라 -10으로 변경
                     ghgChange = 50;
                     logMessage = `🚗 차량을 이용해 오름이 시들... (${lifeForceChange} 생명력)`;
                     break;
@@ -813,6 +988,18 @@
             oreumElement.className = 'oreum'; // 초기화
             oreumElement.classList.add(`level-${currentState.level}`);
         }
+        
+        // Google 로그인 함수
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                // 로그인 성공 후 처리 (onAuthStateChanged가 알아서 처리)
+            } catch (error) {
+                console.error("Google 로그인 오류:", error);
+                showModal("로그인 오류", `Google 로그인에 실패했습니다: ${error.message}`);
+            }
+        }
 
         // 사이드 패널 열기
         function openSidePanel() {
@@ -825,6 +1012,16 @@
             sidePanelOverlay.classList.remove('active');
             sidePanel.classList.remove('active');
         }
+        
+        // 미션 모달 열기
+        function openMissionModal() {
+            missionModalOverlay.style.display = 'flex';
+        }
+
+        // 미션 모달 닫기
+        function closeMissionModal() {
+            missionModalOverlay.style.display = 'none';
+        }
 
         // 이벤트 리스너
         profileIconWrapper.addEventListener('click', openSidePanel);
@@ -834,7 +1031,16 @@
                 closeSidePanel();
             }
         });
+        
+        missionIconWrapper.addEventListener('click', openMissionModal);
+        missionCloseBtn.addEventListener('click', closeMissionModal);
+        missionModalOverlay.addEventListener('click', (e) => {
+            if (e.target === missionModalOverlay) {
+                closeMissionModal();
+            }
+        });
 
+        googleSignInBtn.addEventListener('click', signInWithGoogle);
         signOutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
                 showModal("로그아웃", "성공적으로 로그아웃 되었습니다.");
