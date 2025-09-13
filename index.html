@@ -674,6 +674,7 @@
                 <div id="logged-out-view">
                     <p class="text-center text-sm mb-4">로그인하고 오름을 키워보세요!</p>
                     <button id="google-sign-in-btn" class="google-btn">
+                        onclick="signInWithGoogle()"
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-6 h-6">
                         <span>Google 계정으로 로그인</span>
                     </button>
@@ -1083,10 +1084,6 @@
             currentState.lifeForce += lifeForceChange;
             currentState.ghgReduced += ghgChange;
 
-            // 생명력이 음수가 되지 않도록 방지
-            if (currentState.lifeForce < 0) {
-                currentState.lifeForce = 0;
-            }
 
             // 활동 로그 기록
             logAction(logMessage);
