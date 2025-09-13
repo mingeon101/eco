@@ -92,10 +92,11 @@ const rewardsCountEl = document.getElementById('rewards-count');
 // --------------------------------------------------
 // 함수 정의
 function openModal(modalId) {
-    const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay');
+    const allModals = document.querySelectorAll('#mission-modal-overlay, #rewards-modal-overlay, #side-panel-overlay');
     allModals.forEach(modal => {
         modal.classList.add('hidden');
     });
+    
     const targetModal = document.getElementById(modalId);
     if (targetModal) {
         targetModal.classList.remove('hidden');
@@ -116,7 +117,7 @@ function logAction(message) {
 function showModal(title, message) {
     modalTitle.textContent = title;
     modalMessage.textContent = message;
-    modalOverlay.style.display = 'flex';
+    modalOverlay.classList.remove('hidden');
 }
 
 function startSensorsAndGame() {
@@ -334,11 +335,13 @@ async function signInWithGoogle() {
 }
 
 function openSidePanel() {
+    sidePanelOverlay.classList.remove('hidden');
     sidePanelOverlay.classList.add('active');
     sidePanel.classList.add('active');
 }
 
 function closeSidePanel() {
+    sidePanelOverlay.classList.add('hidden');
     sidePanelOverlay.classList.remove('active');
     sidePanel.classList.remove('active');
 }
@@ -415,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     modalCloseBtn.addEventListener('click', () => {
-        modalOverlay.style.display = 'none';
+        modalOverlay.classList.add('hidden');
     });
     
     googleSignInBtn.addEventListener('click', signInWithGoogle);
