@@ -360,15 +360,7 @@
             lastSpeed = speed;
         }
 
-        // 활동 로그를 화면에 추가하는 함수
-        function logAction(text) {
-            const newLog = document.createElement('p');
-            newLog.textContent = text;
-            logContainer.prepend(newLog); // 최신 로그가 위에 보이도록
-            if (logContainer.children.length > 5) {
-                logContainer.removeChild(logContainer.lastElementChild);
-            }
-        }
+
 
         // 레벨업 조건을 확인하고 처리하는 함수
         function checkLevelUp() {
