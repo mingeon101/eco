@@ -90,9 +90,7 @@ const rewardListContainer = document.getElementById('reward-list-container');
 const rewardsCountEl = document.getElementById('rewards-count');
 
 // --------------------------------------------------
-// 함수 정의: 이전에 선언된 변수들을 사용합니다.
-
-// 모든 모달을 닫고, 지정된 모달만 여는 함수
+// 함수 정의
 function openModal(modalId) {
     const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay');
     allModals.forEach(modal => {
@@ -104,7 +102,6 @@ function openModal(modalId) {
     }
 }
 
-// 로그를 화면에 추가하는 함수 (logAction)
 function logAction(message) {
     const logList = document.getElementById('log-list');
     if (logList) {
@@ -403,13 +400,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
+    // 보상 탭 이벤트 리스너: 올바른 ID로 수정됨
+    rewardsIconWrapper.addEventListener('click', () => {
+        openModal('rewards-modal-overlay');
+        renderRewards(); // 모달이 열릴 때 보상 목록을 다시 렌더링
+    });
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
             openModal('');
         }
-        renderRewards(); // 모달이 닫힐 때도 최신 상태로 렌더링
     });
 
     googleSignInBtn.addEventListener('click', signInWithGoogle);
