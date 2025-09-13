@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
-            openModal('rewards-modal-overlay');
+            openModal('');
         }
     });
     
