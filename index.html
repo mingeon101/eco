@@ -115,6 +115,31 @@
             </div>
         </div>
     </div>
+
+    <div id="rewards-modal-overlay">
+        <div id="rewards-modal">
+            <div class="rewards-header">
+                <h2>오늘의 보상</h2>
+                <p>남은 보상 개수: <span id="rewards-count">6개</span></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div id="progress-line" class="progress-line"></div>
+                    </div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                    <div class="progress-circle"></div>
+                </div>
+            </div>
+            
+            <div id="reward-list-container" class="flex flex-col gap-3 mt-4">
+                </div>
+            
+            <button id="rewards-close-btn" class="rewards-close-btn">닫기</button>
+        </div>
+    </div>
     
     <div id="mission-modal-overlay">
         <div id="mission-modal">
@@ -187,30 +212,7 @@
             </div>
     </div>
 
-    <div id="rewards-modal-overlay">
-        <div id="rewards-modal">
-            <div class="rewards-header">
-                <h2>오늘의 보상</h2>
-                <p>남은 보상 개수: <span id="rewards-count">6개</span></p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar">
-                        <div id="progress-line" class="progress-line"></div>
-                    </div>
-                    <div class="progress-circle"></div>
-                    <div class="progress-circle"></div>
-                    <div class="progress-circle"></div>
-                    <div class="progress-circle"></div>
-                    <div class="progress-circle"></div>
-                    <div class="progress-circle"></div>
-                </div>
-            </div>
-            
-            <div id="reward-list-container" class="flex flex-col gap-3 mt-4">
-                </div>
-            
-            <button id="rewards-close-btn" class="rewards-close-btn">닫기</button>
-        </div>
-    </div>
+    
 
     <script>
       (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="KwLJdboX39BEnTOig8OKU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
