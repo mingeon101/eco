@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    missionIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
+    missionIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
     missionCloseBtn.addEventListener('click', () => openModal(''));
     missionModalOverlay.addEventListener('click', (e) => {
         if (e.target === missionModalOverlay) {
@@ -400,11 +400,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    rewardsIconWrapper.addEventListener('click', () => openModal('reward-modal-overlay'));
+    rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
-            openModal('');
+            openModal('rewards-modal-overlay');
         }
     });
     
