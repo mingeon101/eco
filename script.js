@@ -90,19 +90,22 @@ const rewardListContainer = document.getElementById('reward-list-container');
 const rewardsCountEl = document.getElementById('rewards-count');
 
 // --------------------------------------------------
-// 함수 정의
+// 함수 정의: 이전에 선언된 변수들을 사용합니다.
+
+// 모든 모달을 닫고, 지정된 모달만 여는 함수
 function openModal(modalId) {
-    const allModals = document.querySelectorAll('#mission-modal-overlay, #rewards-modal-overlay, #side-panel-overlay');
+    const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay');
     allModals.forEach(modal => {
         modal.classList.add('hidden');
     });
-    
     const targetModal = document.getElementById(modalId);
     if (targetModal) {
         targetModal.classList.remove('hidden');
+        targetModal.style.display = 'flex';
     }
 }
 
+// 로그를 화면에 추가하는 함수 (logAction)
 function logAction(message) {
     const logList = document.getElementById('log-list');
     if (logList) {
@@ -117,7 +120,7 @@ function logAction(message) {
 function showModal(title, message) {
     modalTitle.textContent = title;
     modalMessage.textContent = message;
-    modalOverlay.classList.remove('hidden');
+    modalOverlay.style.display = 'flex';
 }
 
 function startSensorsAndGame() {
@@ -335,13 +338,11 @@ async function signInWithGoogle() {
 }
 
 function openSidePanel() {
-    sidePanelOverlay.classList.remove('hidden');
     sidePanelOverlay.classList.add('active');
     sidePanel.classList.add('active');
 }
 
 function closeSidePanel() {
-    sidePanelOverlay.classList.add('hidden');
     sidePanelOverlay.classList.remove('active');
     sidePanel.classList.remove('active');
 }
@@ -395,9 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    missionIconWrapper.addEventListener('click', () => {
-        openModal('mission-modal-overlay');
-    });
+    missionIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
     missionCloseBtn.addEventListener('click', () => openModal(''));
     missionModalOverlay.addEventListener('click', (e) => {
         if (e.target === missionModalOverlay) {
@@ -407,8 +406,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 보상 탭 이벤트 리스너
     rewardsIconWrapper.addEventListener('click', () => {
-        renderRewards(); // 보상 모달이 열릴 때 보상 목록을 다시 렌더링
-        openModal('rewards-modal-overlay'); // 모달을 보이게 함
+        openModal('rewards-modal-overlay');
+        renderRewards(); // 모달이 열릴 때 보상 목록을 다시 렌더링
     });
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
@@ -417,10 +416,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // 모달 닫기 버튼 이벤트 리스너 추가
     modalCloseBtn.addEventListener('click', () => {
-        modalOverlay.classList.add('hidden');
+        modalOverlay.style.display = 'none';
     });
-    
+
     googleSignInBtn.addEventListener('click', signInWithGoogle);
     signOutBtn.addEventListener('click', () => {
         signOut(auth).then(() => {
