@@ -17,7 +17,6 @@
 
     <div class="simulation-container">
         
-        <!-- 게임 컨텐츠가 표시될 메인 섹션 -->
         <div id="game-display-area" class="h-full flex flex-col justify-between">
             <header>
                 <h1 class="text-3xl sm:text-4xl font-bold">나의 탄소 오름</h1>
@@ -40,19 +39,16 @@
                 </div>
             </main>
             
-            <!-- 정보 대시보드 -->
             <div class="dashboard">
                 <div class="stat">레벨 <span id="level-value" class="text-2xl sm:text-3xl">1</span></div>
                 <div class="stat">생명력 <span id="life-force-value" class="text-2xl sm:text-3xl">0</span></div>
                 <div class="stat">감축량 <span id="ghg-reduced-value" class="text-2xl sm:text-3xl">0g</span></div>
             </div>
             
-            <!-- 센서 대시보드 -->
             <div class="sensor-dashboard">
                 <p>현재 이동수단: <span id="transport-display" class="font-bold text-blue-600 animate-pulse">대기 중...</span></p>
                 <p>현재 속도: <span id="speed-display" class="value">0 m/s</span></p>
                 <p>가속도: <span id="acc-display" class="value">0 m/s²</span></p>
-                <!-- 로그인 상태에 따라 다른 메시지를 표시하도록 변경 -->
                 <p id="user-info-display" class="text-xs truncate text-gray-400">로그인하고 오름을 키워보세요!</p>
                 <p id="db-status" class="text-xs text-gray-400">Firebase 초기화 중...</p>
             </div>
@@ -61,20 +57,15 @@
             </div>
         </div>
         
-        <!-- 하단 내비게이션 바 -->
         <footer class="w-full border-t border-gray-300 bg-white absolute bottom-0">
-            <!-- divide-x 클래스로 아이콘 사이의 세로선 자동 생성 -->
             <nav class="flex justify-around items-center h-14 sm:h-16 text-gray-500 divide-x divide-gray-300">
-                <!-- flex-1 flex justify-center items-center 클래스를 사용하여 아이콘을 중앙에 배치 -->.
-                <!-- 미션 버튼 추가 -->
+                .
                 <a id="mission-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 </a>
-                <!-- 보상 버튼 추가 -->
                 <a id="rewards-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                 </a>
-                <!-- 마이페이지 버튼 추가 -->
                 <a id="profile-icon-wrapper" class="flex-1 flex justify-center items-center h-full cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </a>
@@ -82,7 +73,6 @@
         </footer>
     </div>
     
-    <!-- 알림 모달 -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
             <h3 id="modal-title" class="font-bold text-lg mb-2"></h3>
@@ -91,7 +81,6 @@
         </div>
     </div>
     
-    <!-- 사이드 패널 (로그인/마이페이지) -->
     <div id="side-panel-overlay" class="side-panel-overlay">
         <div id="side-panel" class="side-panel">
             <div class="side-panel-header">
@@ -99,7 +88,6 @@
                 <button id="side-panel-close-btn">&times;</button>
             </div>
             <div class="side-panel-content">
-                <!-- 로그인 상태에 따라 내용이 동적으로 변경됩니다 -->
                 <div id="logged-out-view">
                     <p class="text-center text-sm mb-4">로그인하고 오름을 키워보세요!</p>
                     <button id="google-sign-in-btn" class="google-btn">
@@ -128,7 +116,6 @@
         </div>
     </div>
     
-    <!-- 미션 모달 -->
     <div id="mission-modal-overlay">
         <div id="mission-modal">
             <div style="height: 700px; overflow-y: auto">
@@ -197,10 +184,9 @@
                     </li>
                 </ul>
                 <button id="mission-close-btn" class="mission-close-btn">닫기</button>
-        </div>
+            </div>
     </div>
 
-    <!-- 보상 모달 -->
     <div id="rewards-modal-overlay">
         <div id="rewards-modal">
             <div class="rewards-header">
@@ -220,14 +206,12 @@
             </div>
             
             <div id="reward-list-container" class="flex flex-col gap-3 mt-4">
-                <!-- 보상 목록이 여기에 동적으로 추가됩니다 -->
-            </div>
+                </div>
             
             <button id="rewards-close-btn" class="rewards-close-btn">닫기</button>
         </div>
     </div>
 
-    <!-- Chatbase 채팅 풍선 스크립트 -->
     <script>
       (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="KwLJdboX39BEnTOig8OKU";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
     </script>
