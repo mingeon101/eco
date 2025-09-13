@@ -586,8 +586,6 @@
             }
         });
 
-        generateMissionBtn.addEventListener('click', generateNewMission);
-
         googleSignInBtn.addEventListener('click', signInWithGoogle);
         signOutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
