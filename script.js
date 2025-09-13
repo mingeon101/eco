@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    missionIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
+    missionIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
     missionCloseBtn.addEventListener('click', () => openModal(''));
     missionModalOverlay.addEventListener('click', (e) => {
         if (e.target === missionModalOverlay) {
