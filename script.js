@@ -94,11 +94,11 @@ const rewardsCountEl = document.getElementById('rewards-count');
 function openModal(modalId) {
     const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay');
     allModals.forEach(modal => {
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
     });
     const targetModal = document.getElementById(modalId);
     if (targetModal) {
-        targetModal.style.display = 'flex';
+        targetModal.classList.remove('hidden');
     }
 }
 
@@ -400,10 +400,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // 보상 탭 이벤트 리스너: 올바른 ID로 수정됨
+    // 보상 탭 이벤트 리스너
     rewardsIconWrapper.addEventListener('click', () => {
-        openModal('rewards-modal-overlay');
-        renderRewards(); // 모달이 열릴 때 보상 목록을 다시 렌더링
+        renderRewards(); // 보상 모달이 열릴 때 보상 목록을 다시 렌더링
+        openModal('rewards-modal-overlay'); // 모달을 보이게 함
     });
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
@@ -411,7 +411,11 @@ document.addEventListener('DOMContentLoaded', () => {
             openModal('');
         }
     });
-
+    
+    modalCloseBtn.addEventListener('click', () => {
+        modalOverlay.style.display = 'none';
+    });
+    
     googleSignInBtn.addEventListener('click', signInWithGoogle);
     signOutBtn.addEventListener('click', () => {
         signOut(auth).then(() => {
