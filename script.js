@@ -399,9 +399,17 @@ document.addEventListener('DOMContentLoaded', () => {
             openModal('');
         }
     });
+
+    rewardsIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
+    rewardsCloseBtn.addEventListener('click', () => openModal(''));
+    rewardsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === rewardsModalOverlay) {
+            openModal('');
+        }
+    });
     
     // 보상 탭 이벤트 리스너: 올바른 ID로 수정됨
-    rewardsIconWrapper.addEventListener('click', () => {
+/*    rewardsIconWrapper.addEventListener('click', () => {
         openModal('rewards-modal-overlay');
         renderRewards(); // 모달이 열릴 때 보상 목록을 다시 렌더링
     });
@@ -411,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             openModal('');
         }
     });
-
+*/
     googleSignInBtn.addEventListener('click', signInWithGoogle);
     signOutBtn.addEventListener('click', () => {
         signOut(auth).then(() => {
