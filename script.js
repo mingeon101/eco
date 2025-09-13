@@ -49,6 +49,25 @@ const levelThresholds = {
     27: 6710886300, 28: 13421772700, 29: 26843545500, 30: 53687091100,
 };
 
+// 미션 상세 정보
+const missionDetails = {
+    '🔌 플러그 뽑기': { title: '플러그 뽑기', message: '사용하지 않는 가전제품의 플러그를 뽑아 대기 전력을 차단하면, 탄소 배출량을 줄일 수 있습니다. 이는 전기 에너지 낭비를 막고, 지구를 보호하는 작은 실천입니다.' },
+    '🌡️ 냉난방 온도 조절': { title: '냉난방 온도 조절', message: '에어컨과 히터 사용 시 적정 온도를 유지하는 것은 에너지 절약에 큰 도움이 됩니다. 냉방은 26°C 이상, 난방은 20°C 이하로 설정하여 에너지 효율을 높여보세요.' },
+    '💡 전등 끄기': { title: '전등 끄기', message: '방을 나갈 때 불 끄기! 간단하지만 매우 중요한 습관입니다. 불필요한 조명을 꺼두면 전력 소비를 줄이고, 이로 인해 탄소 배출량도 감소합니다.' },
+    '🚰 물 절약': { title: '물 절약', message: '물은 소중한 자원입니다. 양치할 때 컵 사용하기, 샤워 시간 줄이기, 설거지통에 물 받아서 사용하기 등 생활 속 작은 실천으로 물을 아껴 쓰세요.' },
+    '🍶 텀블러 사용': { title: '텀블러 사용', message: '일회용 컵은 환경 오염의 주범 중 하나입니다. 텀블러를 사용하면 플라스틱과 종이컵 사용을 줄이고, 자원 낭비를 막을 수 있습니다.' },
+    '💸 친환경 제품 구매': { title: '친환경 제품 구매', message: '재활용 소재로 만들었거나 환경마크가 있는 제품을 구매하면 기업의 친환경 생산을 장려할 수 있습니다. 이는 환경 보호에 기여하는 현명한 소비입니다.' },
+    '🥕 중고 물품 활용': { title: '중고 물품 활용', message: '중고 물품을 구매하거나 판매하는 것은 자원 낭비를 막고, 새로운 제품 생산에 드는 에너지와 탄소를 절약하는 효과가 있습니다.' },
+    '🛒 지역 농산물 이용': { title: '지역 농산물 이용', message: '지역 농산물을 구매하면 운송 거리를 줄여 탄소 배출량을 감소시킬 수 있습니다. 신선한 음식을 맛보는 동시에 환경을 생각하는 착한 소비입니다.' },
+    '🍚 잔반 남기지 않기': { title: '잔반 남기지 않기', message: '음식물 쓰레기는 처리 과정에서 막대한 양의 탄소가 발생합니다. 먹을 만큼만 요리하고 남기지 않는 습관은 환경을 위한 중요한 행동입니다.' },
+    '🚶‍♂️‍➡️ 플로깅을 실천하기': { title: '플로깅 실천', message: '조깅을 하면서 쓰레기를 줍는 활동인 플로깅은 건강과 환경을 동시에 챙기는 좋은 방법입니다. 깨끗한 거리를 만들고, 뿌듯함도 느껴보세요!' },
+    '🪜 계단 이용': { title: '계단 이용', message: '가까운 층은 엘리베이터 대신 계단을 이용하세요. 전력 소비를 줄여 탄소를 감축하고, 동시에 건강도 챙길 수 있습니다.' },
+    '🖥️ 컴퓨터 절전 모드 활용': { title: '컴퓨터 절전 모드', message: '컴퓨터를 사용하지 않을 때는 절전 모드로 전환하거나 전원을 끄세요. 이는 전력 소비를 줄여 탄소 배출을 막는 효과적인 방법입니다.' },
+    '♻️ 택배 박스 재활용': { title: '택배 박스 재활용', message: '택배 박스를 재활용할 때 이물질을 제거하고 잘 펼쳐서 배출하면 재활용률을 높일 수 있습니다. 올바른 분리수거는 자원 순환의 첫걸음입니다.' },
+    '👕 패스트 패션 지양': { title: '패스트 패션 지양', message: '유행에 맞춰 저렴하게 대량 생산되는 패스트 패션은 환경 오염의 원인이 됩니다. 오래 입을 수 있는 좋은 옷을 신중하게 구매하는 습관을 들여보세요.' },
+    '☘️ 에코 캠페인 참여': { title: '에코 캠페인 참여', message: '환경 보호 캠페인에 참여하여 환경 문제에 대한 인식을 높이고, 더 많은 사람들이 친환경 활동에 동참하도록 독려할 수 있습니다.' },
+};
+
 // --------------------------------------------------
 // UI 요소 가져오기 (DOM)
 const profileIconWrapper = document.getElementById('profile-icon-wrapper');
@@ -89,10 +108,16 @@ const rewardsCloseBtn = document.getElementById("rewards-close-btn");
 const rewardListContainer = document.getElementById('reward-list-container');
 const rewardsCountEl = document.getElementById('rewards-count');
 
+// 새롭게 추가된 미션 상세 모달 관련 UI 요소
+const missionDetailModalOverlay = document.getElementById('mission-detail-modal-overlay');
+const missionDetailTitle = document.getElementById('mission-detail-title');
+const missionDetailMessage = document.getElementById('mission-detail-message');
+const missionDetailCloseBtn = document.getElementById('mission-detail-close-btn');
+
 // --------------------------------------------------
 // 함수 정의
 function openModal(modalId) {
-    const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay');
+    const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay, #mission-detail-modal-overlay');
     allModals.forEach(modal => {
         modal.style.display = 'none';
     });
@@ -119,6 +144,33 @@ function showModal(title, message) {
     modalOverlay.style.display = 'flex';
 }
 
+// 미션 상세 모달을 띄우는 함수
+function openMissionDetailModal(title, message) {
+    missionDetailTitle.textContent = title;
+    missionDetailMessage.textContent = message;
+    missionDetailModalOverlay.style.display = 'flex';
+}
+
+// 미션 상세 모달을 닫는 함수
+function closeMissionDetailModal() {
+    missionDetailModalOverlay.style.display = 'none';
+}
+
+// 미션 아이템에 클릭 이벤트 리스너 추가
+function addMissionClickListeners() {
+    document.querySelectorAll('.mission-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const title = item.querySelector('h3').textContent.trim();
+            const detail = missionDetails[title];
+            if (detail) {
+                openMissionDetailModal(detail.title, detail.message);
+            } else {
+                openMissionDetailModal(title, '상세 정보가 준비 중입니다.');
+            }
+        });
+    });
+}
+
 function startSensorsAndGame() {
     let speed = 0;
     let accMagnitude = 0;
@@ -132,8 +184,8 @@ function startSensorsAndGame() {
                 speedDisplayEl.textContent = `${speed.toFixed(2)} m/s`;
                 updateGameAndTransport(speed, accMagnitude);
             },
-            (err) => { 
-                transportDisplayEl.textContent = "GPS 오류"; 
+            (err) => {  
+                transportDisplayEl.textContent = "GPS 오류";  
                 console.error("Geolocation Error:", err);
                 let errorMessage = "위치 정보 접근이 거부되었거나 오류가 발생했습니다.";
                 switch (err.code) {
@@ -392,36 +444,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // 미션 및 보상 아이콘 클릭 시 모달 열기
     missionIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
+    rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
+    
+    // 모달 닫기 버튼 및 오버레이 클릭 시 모달 닫기
     missionCloseBtn.addEventListener('click', () => openModal(''));
     missionModalOverlay.addEventListener('click', (e) => {
         if (e.target === missionModalOverlay) {
             openModal('');
         }
     });
-
-    rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
-    rewardsModalOverlay.classList.remove('hidden');
+    
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
-    rewardsModalOverlay.classList.add('hidden');
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
             openModal('');
         }
     });
     
-    // 보상 탭 이벤트 리스너: 올바른 ID로 수정됨
-/*    rewardsIconWrapper.addEventListener('click', () => {
-        openModal('rewards-modal-overlay');
-        renderRewards(); // 모달이 열릴 때 보상 목록을 다시 렌더링
-    });
-    rewardsCloseBtn.addEventListener('click', () => openModal(''));
-    rewardsModalOverlay.addEventListener('click', (e) => {
-        if (e.target === rewardsModalOverlay) {
-            openModal('');
+    // 미션 상세 모달 닫기 버튼 및 오버레이 클릭 시 닫기
+    missionDetailCloseBtn.addEventListener('click', () => closeMissionDetailModal());
+    missionDetailModalOverlay.addEventListener('click', (e) => {
+        if (e.target === missionDetailModalOverlay) {
+            closeMissionDetailModal();
         }
     });
-*/
+
     googleSignInBtn.addEventListener('click', signInWithGoogle);
     signOutBtn.addEventListener('click', () => {
         signOut(auth).then(() => {
@@ -431,6 +480,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showModal("로그아웃 실패", `오류: ${error.message}`);
         });
     });
+
+    // 미션 아이템 클릭 이벤트 리스너 추가 함수 호출
+    addMissionClickListeners();
 });
 
 // Firebase에서 게임 상태를 불러오는 함수
