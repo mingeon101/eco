@@ -401,7 +401,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
+    rewardsModalOverlay.classList.remove('hidden');
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
+    rewardsModalOverlay.classList.add('hidden');
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
             openModal('');
