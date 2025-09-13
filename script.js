@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    rewardsIconWrapper.addEventListener('click', () => openModal('mission-modal-overlay'));
+    rewardsIconWrapper.addEventListener('click', () => openModal('rewards-modal-overlay'));
     rewardsCloseBtn.addEventListener('click', () => openModal(''));
     rewardsModalOverlay.addEventListener('click', (e) => {
         if (e.target === rewardsModalOverlay) {
