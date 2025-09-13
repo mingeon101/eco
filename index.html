@@ -73,7 +73,7 @@
         </footer>
     </div>
     
-    <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
             <h3 id="modal-title" class="font-bold text-lg mb-2"></h3>
             <p id="modal-message" class="text-sm text-gray-600 mb-4"></p>
@@ -81,7 +81,7 @@
         </div>
     </div>
     
-    <div id="side-panel-overlay" class="side-panel-overlay hidden">
+    <div id="side-panel-overlay" class="side-panel-overlay">
         <div id="side-panel" class="side-panel">
             <div class="side-panel-header">
                 <h2 id="side-panel-title">마이페이지</h2>
@@ -116,9 +116,9 @@
         </div>
     </div>
     
-    <div id="mission-modal-overlay" class="modal-overlay hidden">
-        <div id="mission-modal" class="modal">
-            <div class="modal-content-scroll">
+    <div id="mission-modal-overlay">
+        <div id="mission-modal">
+            <div style="height: 700px; overflow-y: auto">
                 <h2>오늘의 미션</h2>
                 <p class="text-gray-600">친환경 활동으로 생명력을 얻고 오름을 키워보세요!</p>
                 <ul id="mission-list" class="mission-list">
@@ -183,13 +183,12 @@
                         <p>환경 단체에서 주관하는 캠페인이나 서명 운동에 참여하세요.</p>
                     </li>
                 </ul>
+                <button id="mission-close-btn" class="mission-close-btn">닫기</button>
             </div>
-            <button id="mission-close-btn" class="mission-close-btn">닫기</button>
-        </div>
     </div>
 
-    <div id="rewards-modal-overlay" class="modal-overlay hidden">
-        <div id="rewards-modal" class="modal">
+    <div id="rewards-modal-overlay">
+        <div id="rewards-modal">
             <div class="rewards-header">
                 <h2>오늘의 보상</h2>
                 <p>남은 보상 개수: <span id="rewards-count">6개</span></p>
