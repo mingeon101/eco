@@ -220,13 +220,13 @@ function updateGame(transportType) {
 }
 
 async function updateGameAndTransport(speed, accMagnitude) {
+    const transportDisplayEl = document.getElementById("transport-display");
+    const dbStatusEl = document.getElementById("db-status");
+
     if (!userId) {
-        const transportDisplayEl = document.getElementById("transport-display");
         transportDisplayEl.textContent = "로그인 대기 중...";
         return;
     }
-    const transportDisplayEl = document.getElementById("transport-display");
-    const dbStatusEl = document.getElementById("db-status");
 
     let transport = "탐지 중...";
     const speed_kph = speed * 3.6;
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     auth = getAuth(app);
     db = getDatabase(app);
 
-    // 모든 UI 요소를 DOM이 로드된 후 가져옵니다.
+    // ✅ 모든 UI 요소를 DOM이 로드된 후 가져옵니다.
     const profileIconWrapper = document.getElementById('profile-icon-wrapper');
     const sidePanelCloseBtn = document.getElementById("side-panel-close-btn");
     const sidePanelOverlay = document.getElementById("side-panel-overlay");
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 모든 UI 이벤트 리스너
+    // ✅ 모든 UI 이벤트 리스너를 이 안에 배치합니다.
     profileIconWrapper.addEventListener('click', openSidePanel);
     sidePanelCloseBtn.addEventListener('click', closeSidePanel);
     sidePanelOverlay.addEventListener('click', (e) => {
