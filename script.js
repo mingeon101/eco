@@ -69,52 +69,6 @@ const missionDetails = {
 };
 
 // --------------------------------------------------
-// UI 요소 가져오기 (DOM)
-const profileIconWrapper = document.getElementById('profile-icon-wrapper');
-const oreumElement = document.getElementById('oreum');
-const levelValue = document.getElementById('level-value');
-const lifeForceValue = document.getElementById('life-force-value');
-const ghgReducedValue = document.getElementById('ghg-reduced-value');
-const logContainer = document.getElementById('log-container');
-const speedDisplayEl = document.getElementById("speed-display");
-const accDisplayEl = document.getElementById("acc-display");
-const dbStatusEl = document.getElementById("db-status");
-const userInfoDisplayEl = document.getElementById("user-info-display");
-const transportDisplayEl = document.getElementById("transport-display");
-const modalOverlay = document.getElementById("modal-overlay");
-const modalTitle = document.getElementById("modal-title");
-const modalMessage = document.getElementById("modal-message");
-const modalCloseBtn = document.getElementById("modal-close-btn");
-
-const sidePanelOverlay = document.getElementById("side-panel-overlay");
-const sidePanel = document.getElementById("side-panel");
-const sidePanelCloseBtn = document.getElementById("side-panel-close-btn");
-const loggedOutView = document.getElementById("logged-out-view");
-const loggedInView = document.getElementById("logged-in-view");
-const googleSignInBtn = document.getElementById("google-sign-in-btn");
-const signOutBtn = document.getElementById("sign-out-btn");
-const panelUserInfo = document.getElementById("panel-user-info");
-const panelLevelValue = document.getElementById("panel-level-value");
-const panelGhgReducedValue = document.getElementById("panel-ghg-reduced-value");
-
-const missionIconWrapper = document.getElementById("mission-icon-wrapper");
-const missionModalOverlay = document.getElementById("mission-modal-overlay");
-const missionCloseBtn = document.getElementById("mission-close-btn");
-const missionListEl = document.getElementById("mission-list");
-
-const rewardsIconWrapper = document.getElementById("rewards-icon-wrapper");
-const rewardsModalOverlay = document.getElementById("rewards-modal-overlay");
-const rewardsCloseBtn = document.getElementById("rewards-close-btn");
-const rewardListContainer = document.getElementById('reward-list-container');
-const rewardsCountEl = document.getElementById('rewards-count');
-
-// 새롭게 추가된 미션 상세 모달 관련 UI 요소
-const missionDetailModalOverlay = document.getElementById('mission-detail-modal-overlay');
-const missionDetailTitle = document.getElementById('mission-detail-title');
-const missionDetailMessage = document.getElementById('mission-detail-message');
-const missionDetailCloseBtn = document.getElementById('mission-detail-close-btn');
-
-// --------------------------------------------------
 // 함수 정의
 function openModal(modalId) {
     const allModals = document.querySelectorAll('.modal-overlay, #mission-modal-overlay, #rewards-modal-overlay, #mission-detail-modal-overlay');
@@ -139,6 +93,9 @@ function logAction(message) {
 }
 
 function showModal(title, message) {
+    const modalTitle = document.getElementById("modal-title");
+    const modalMessage = document.getElementById("modal-message");
+    const modalOverlay = document.getElementById("modal-overlay");
     modalTitle.textContent = title;
     modalMessage.textContent = message;
     modalOverlay.style.display = 'flex';
@@ -146,6 +103,9 @@ function showModal(title, message) {
 
 // 미션 상세 모달을 띄우는 함수
 function openMissionDetailModal(title, message) {
+    const missionDetailTitle = document.getElementById('mission-detail-title');
+    const missionDetailMessage = document.getElementById('mission-detail-message');
+    const missionDetailModalOverlay = document.getElementById('mission-detail-modal-overlay');
     missionDetailTitle.textContent = title;
     missionDetailMessage.textContent = message;
     missionDetailModalOverlay.style.display = 'flex';
@@ -153,6 +113,7 @@ function openMissionDetailModal(title, message) {
 
 // 미션 상세 모달을 닫는 함수
 function closeMissionDetailModal() {
+    const missionDetailModalOverlay = document.getElementById('mission-detail-modal-overlay');
     missionDetailModalOverlay.style.display = 'none';
 }
 
@@ -175,6 +136,10 @@ function startSensorsAndGame() {
     let speed = 0;
     let accMagnitude = 0;
     
+    const transportDisplayEl = document.getElementById("transport-display");
+    const speedDisplayEl = document.getElementById("speed-display");
+    const accDisplayEl = document.getElementById("acc-display");
+
     transportDisplayEl.textContent = "감지 시작...";
 
     if (navigator.geolocation) {
@@ -256,9 +221,12 @@ function updateGame(transportType) {
 
 async function updateGameAndTransport(speed, accMagnitude) {
     if (!userId) {
+        const transportDisplayEl = document.getElementById("transport-display");
         transportDisplayEl.textContent = "로그인 대기 중...";
         return;
     }
+    const transportDisplayEl = document.getElementById("transport-display");
+    const dbStatusEl = document.getElementById("db-status");
 
     let transport = "탐지 중...";
     const speed_kph = speed * 3.6;
@@ -313,6 +281,7 @@ async function updateGameAndTransport(speed, accMagnitude) {
 }
 
 function checkLevelUp() {
+    const logContainer = document.getElementById('log-container');
     const nextLevel = currentState.level + 1;
     if (levelThresholds[nextLevel] && currentState.lifeForce >= levelThresholds[nextLevel]) {
         currentState.level = nextLevel;
@@ -325,6 +294,13 @@ function checkLevelUp() {
 }
 
 function updateDisplay() {
+    const levelValue = document.getElementById('level-value');
+    const lifeForceValue = document.getElementById('life-force-value');
+    const ghgReducedValue = document.getElementById('ghg-reduced-value');
+    const panelLevelValue = document.getElementById("panel-level-value");
+    const panelGhgReducedValue = document.getElementById("panel-ghg-reduced-value");
+    const oreumElement = document.getElementById('oreum');
+
     levelValue.textContent = currentState.level;
     lifeForceValue.textContent = currentState.lifeForce;
     ghgReducedValue.textContent = `${currentState.ghgReduced}g`;
@@ -337,6 +313,8 @@ function updateDisplay() {
 }
 
 function renderRewards() {
+    const rewardListContainer = document.getElementById('reward-list-container');
+    const rewardsCountEl = document.getElementById('rewards-count');
     rewardListContainer.innerHTML = '';
     rewardsList.forEach(reward => {
         const rewardItem = document.createElement('div');
@@ -377,6 +355,7 @@ function checkRewardsStatus() {
 
 async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
+    const auth = getAuth();
     try {
         const result = await signInWithPopup(auth, provider);
     } catch (error) {
@@ -386,11 +365,15 @@ async function signInWithGoogle() {
 }
 
 function openSidePanel() {
+    const sidePanelOverlay = document.getElementById("side-panel-overlay");
+    const sidePanel = document.getElementById("side-panel");
     sidePanelOverlay.classList.add('active');
     sidePanel.classList.add('active');
 }
 
 function closeSidePanel() {
+    const sidePanelOverlay = document.getElementById("side-panel-overlay");
+    const sidePanel = document.getElementById("side-panel");
     sidePanelOverlay.classList.remove('active');
     sidePanel.classList.remove('active');
 }
@@ -403,6 +386,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getDatabase(app);
+
+    // 모든 UI 요소를 DOM이 로드된 후 가져옵니다.
+    const profileIconWrapper = document.getElementById('profile-icon-wrapper');
+    const sidePanelCloseBtn = document.getElementById("side-panel-close-btn");
+    const sidePanelOverlay = document.getElementById("side-panel-overlay");
+    const missionIconWrapper = document.getElementById("mission-icon-wrapper");
+    const missionModalOverlay = document.getElementById("mission-modal-overlay");
+    const missionCloseBtn = document.getElementById("mission-close-btn");
+    const rewardsIconWrapper = document.getElementById("rewards-icon-wrapper");
+    const rewardsModalOverlay = document.getElementById("rewards-modal-overlay");
+    const rewardsCloseBtn = document.getElementById("rewards-close-btn");
+    const missionDetailModalOverlay = document.getElementById('mission-detail-modal-overlay');
+    const missionDetailCloseBtn = document.getElementById('mission-detail-close-btn');
+    const googleSignInBtn = document.getElementById("google-sign-in-btn");
+    const signOutBtn = document.getElementById("sign-out-btn");
+    const loggedOutView = document.getElementById("logged-out-view");
+    const loggedInView = document.getElementById("logged-in-view");
+    const userInfoDisplayEl = document.getElementById("user-info-display");
+    const dbStatusEl = document.getElementById("db-status");
+    const panelUserInfo = document.getElementById("panel-user-info");
+
 
     // onAuthStateChanged 리스너 설정: 로그인/로그아웃 상태 변화 감지
     onAuthStateChanged(auth, (user) => {
@@ -487,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Firebase에서 게임 상태를 불러오는 함수
 async function loadGameStateFromDB(currentUserId, currentUserName) {
+    const dbStatusEl = document.getElementById("db-status");
     dbStatusEl.textContent = "데이터 불러오는 중...";
     const userPath = `artifacts/${firebaseConfig.appId}/users-by-name/${currentUserName}`;
     const stateRef = ref(db, `${userPath}/game_state`);
